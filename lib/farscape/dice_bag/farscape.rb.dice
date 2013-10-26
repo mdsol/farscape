@@ -1,0 +1,17 @@
+# Further documentation can be found here: https://github.com/mdsol/crichton/doc/farscape_configuration.md
+<% environment = configured.rails_env || configured.rack_env %>
+<% enforce_timeouts       = configured[:production].enforce_timeouts || true %>
+# When using caching in production, configure something but the file store.
+# The file store is intended for development purposes. Use a memcache-store for production.
+<% entitystore            = configured[:production].entitystore ||
+  (environment == 'production' ? raise("no ENTITY_STORE defined in #{environment}") : 'file:cache/rack/body') %>
+<% metastore              = configured[:production].metastore ||
+  (environment == 'production' ? raise("no META_STORE defined in #{environment}") : 'file:cache/rack/meta') %>
+<% retries                = configured[:production].retries %>
+<% fault_tolerant_cache   = configured[:production].fault_tolerant || false %>
+
+require 'farscape'
+
+Farscape.configure do
+  
+end

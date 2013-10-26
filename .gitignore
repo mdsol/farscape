@@ -1,0 +1,9 @@
+.bundle
+
+Gemfile.lock
+config/*
+coverage
+.rvmrc
+tmp
+.yardoc
+yardoc
