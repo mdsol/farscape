@@ -83,9 +83,9 @@ reloaded_drds = self_transition.invoke
 search_transition = drds.transitions['search']
 search_transition.parameters # => ['search_term']
 
-filtered_drds = search_transition.parameters(search_term: '1812').invoke
-# or
-filtered_drds = search_transition.invoke(parameters: { search_term: '1812' })
+filtered_drds = search_transition.invoke do |builder|
+  builder.parameters = { search_term: '1812' }
+end
 ```
 
 ### Transform resource state
@@ -96,7 +96,7 @@ drd = embedded_drd_items.first
 drd.attributes # => { name: '1812' }
 drd.transitions # => ['self', 'edit', 'delete', 'deactivate', 'leviathan']
 
-deactivate_transition = drd.transitons['deactivate']
+deactivate_transition = drd.transitions['deactivate']
 
 deactivated_drd = deactivate_transition.invoke
 deactivated_drd.attributes # => { name: '1812' }
@@ -120,9 +120,9 @@ leviathan.transitions # => ['self', 'drds']
 create_transition = drds.transitions['create']
 create_transition.attributes # => ['name']
 
-new_drd = create_transition.attributes(name: 'Pike').invoke
-# or
-new_drd = create_transition.invoke(attributes: { name: 'Pike' })
+new_drd = create_transition.invoke do |builder|
+  builder.attributes = { name: 'Pike' }
+end
 
 new_drd.attributes # => { name: 'Pike' }
 new_drd.transitions # => ['self', 'edit', 'delete', 'deactivate', 'leviathan']
