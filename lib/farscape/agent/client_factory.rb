@@ -3,9 +3,9 @@ module Farscape
     class ClientFactory
       def self.build(scheme, options = {}, &block)
         unless klass = registered_classes[scheme.to_sym]
-          raise(UnregisteredClientError, 
-            "No client class is registered for the scheme '#{scheme}'. " <<
-              "Clients are registered for '#{registered_classes.keys.join(',')}' schemes.")
+          msg = "No client class is registered for the scheme '#{scheme}'. " <<
+            "Clients are registered for '#{registered_classes.keys.join(',')}' schemes."
+          raise UnregisteredClientError, msg
         end
         klass.new(options, &block)
       end
