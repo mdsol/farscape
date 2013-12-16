@@ -35,6 +35,15 @@ module Farscape
         end 
       end
       
+      def to_env(connection)
+        unless connection.respond_to?(:build_request)
+          raise ArgumentError, "connection object must implement #build_request method."
+        end
+        validate_attributes!
+
+        build_env(connection)
+      end
+      
       def to_hash
         ATTRIBUTES.each_with_object({}) { |attribute, h| h[attribute] = send(attribute) }
       end
@@ -45,11 +54,39 @@ module Farscape
       
       private
       def check_locked(proc)
-        raise ReferenceLockedError, "You are attempting to modify a locked Reference #{self.inspect}." if locked?
+        raise RequestLockedError, "You are attempting to modify a locked Request object #{self.inspect}." if locked?
         proc.call 
+      end
+      
+      def build_env(connection)
+        request = build_faraday_request(connection)
+        request.to_env(connection).tap do |e|
+          (env_options || {}).each { |k, v| e[k] = v } # Passes options into env for middleware access
+        end
+      end
+      
+      def build_faraday_request(connection)
+        connection.build_request(method.downcase) do |req|
+          req.url       url     if url
+          req.params  = params  if params
+          req.headers = headers if headers
+          req.body    = body    if body
+          req.options = connection_options if connection_options
+        end
+      end
+
+      def validate_attributes!
+        msg = ''
+        msg << "Invalid URL: '#{url.inspect}'. "       unless url && Addressable::URI.parse(url).absolute?
+        msg << "No method specified. "                 unless method
+        msg << "Invalid params: #{params.inspect}. "   if params  && !params.is_a?(Hash)
+        msg << "Invalid headers: #{headers.inspect}. " if headers && !headers.is_a?(Hash)
+
+        raise MalformedRequestError, msg unless msg.empty?
       end
     end
     
-    class ReferenceLockedError < StandardError; end
+    class MalformedRequestError < StandardError; end
+    class RequestLockedError < StandardError; end
   end
 end
