@@ -22,7 +22,8 @@ module Farscape
       describe '#lock!' do
         it 'freezes the request' do
           subject.lock!
-          expect { subject.method = 'anything' }.to raise_error(Farscape::Agent::RequestLockedError)
+          expect { subject.method = 'anything' }.to raise_error(RuntimeError,  
+            "can't modify frozen Farscape::Agent::Request")
         end
         
         it 'returns the locked request' do
@@ -117,11 +118,6 @@ module Farscape
         it 'raises an error for non-hash headers' do
           options[:headers] = double('invalid_headers')
           expect { subject.to_env(connection) }.to raise_error(MalformedRequestError)
-        end
-        
-        it 'raises an error if the connection does not implement a #build_request method' do
-          connection = double('connection')
-          expect { subject.to_env(connection) }.to raise_error(ArgumentError)
         end
       end
   
