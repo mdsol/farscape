@@ -39,7 +39,7 @@ module Farscape
         it 'returns a hash of configured clients' do
           client = double('https_client')
           client_factory.stub(:build).with(anything, anything).and_return(client)
-          subject.client(:http, :https)
+          subject.client(:http, 'https')
           
           subject.clients.should == { http: client, https: client }
         end

@@ -10,13 +10,12 @@ module Farscape
         @client_factory = client_factory
       end
       
-      def client(*schemes, &block)
-        options = schemes.pop unless schemes.last.is_a?(Symbol)
-        
-        schemes.map(&:to_sym).each do |scheme|
-          options.merge!({ builder: @default_builder.dup }) if options && @default_builder
-          clients[scheme] = client_factory.build(scheme, options || {}, &block)
-        end 
+      def client(*args, &block)
+        schemes, options = args.partition { |arg| arg.is_a?(Symbol) || arg.is_a?(String) }
+        options = options.first
+        options.merge!({ builder: @default_builder.dup }) if options && @default_builder
+
+        schemes.map(&:to_sym).each { |scheme| clients[scheme] = client_factory.build(scheme, options || {}, &block) }
       end
       
       def clients
