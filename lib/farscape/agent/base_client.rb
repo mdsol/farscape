@@ -43,14 +43,7 @@ module Farscape
 
       private
       def build_request(request)
-        case request
-        when ::Farscape::Agent::Request
-          request
-        when Hash, NilClass
-          ::Farscape::Agent::Request.new(request || {})
-        else
-          raise ArgumentError, "Argument must be a Farscape::Agent::Request or a Hash. Received: #{request.inspect}."
-        end
+        Request.build_or_return(request)
       end
 
       def default_adapter

@@ -9,6 +9,20 @@ module Farscape
       ATTRIBUTES = %w(url method params body headers connection connection_options env_options).map(&:to_sym)
       
       attr_accessor *ATTRIBUTES
+      
+      ##
+      # Builds a request instance, unless the argument is already an instance of the class.
+      #
+      def self.build_or_return(request)
+        case request
+        when ::Farscape::Agent::Request
+          request
+        when Hash, NilClass
+          ::Farscape::Agent::Request.new(request || {})
+        else
+          raise ArgumentError, "Argument must be a Farscape::Agent::Request or a Hash. Received: #{request.inspect}."
+        end
+      end
 
       def initialize(options = {})
         ATTRIBUTES.each { |attribute| instance_variable_set("@#{attribute}", options[attribute]) }
