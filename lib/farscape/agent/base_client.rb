@@ -1,6 +1,7 @@
 require 'faraday'
 require 'farscape/helpers'
 require 'farscape/agent/request'
+require 'farscape/agent/result'
 
 module Farscape
   class Agent
@@ -54,8 +55,8 @@ module Farscape
         request_connection = request.connection || connection
         request_env = request.to_env(request_connection)
         request_env = serialize_body(request_env)
-        
-        request_connection.app.call(request_env)
+        response = request_connection.app.call(request_env)
+        Result.new(request, response)
       end
       
       def serialize_body(env)

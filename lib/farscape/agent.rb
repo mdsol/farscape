@@ -1,4 +1,5 @@
 require 'farscape/helpers'
+require 'farscape/agent/http_client'
 require 'farscape/agent/request'
 
 module Farscape

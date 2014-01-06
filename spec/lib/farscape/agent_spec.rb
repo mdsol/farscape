@@ -5,7 +5,7 @@ module Farscape
   describe Agent do 
     let(:agent) { Agent.new }
     let(:http_client) { double('http_client') }
-    let(:config) { Farscape.config }
+    let(:config) { Farscape::Configuration.config }
     let(:options) { { url: 'http://example.org' } }
     let(:request) { Agent::Request.new(options) }
      
