@@ -4,7 +4,6 @@ module Farscape
       extend Forwardable
       
       def_delegators :response, :status, :headers, :body
-
     end
   end
 end

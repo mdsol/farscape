@@ -59,9 +59,15 @@ module Farscape
     end
     
     def retrieve_client(request)
-      config.clients[request.scheme].tap do |client|
-        raise UnregisteredClientError, "No client registered for scheme: '#{request.scheme}'." unless client
+      unless client = config.clients[request.scheme]
+        # Allows simple default HTTP client without configuration
+        client = [:http, :https].include?(request.scheme) ? HTTPClient.new : raise_unregistered(request.scheme)
       end
+      client
+    end
+    
+    def raise_unregistered(scheme)
+      raise UnregisteredClientError, "No client registered for scheme: '#{scheme}'."
     end
     
     class UnregisteredClientError < StandardError; end

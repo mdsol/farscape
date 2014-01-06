@@ -42,6 +42,17 @@ module Farscape
           factory.registered_classes.should be_empty
         end
       end
+
+      describe '.registered_classes?' do
+        it 'returns true when there are registered classes' do
+          factory.stub(:registered_classes).and_return({ some: double('class') })
+          factory.registered_classes?.should be_true
+        end
+
+        it 'returns false when there are no registered classes' do
+          factory.registered_classes?.should be_false
+        end
+      end
     end
   end
 end
