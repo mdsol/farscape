@@ -57,11 +57,12 @@ module Farscape
     def build_request(request)
       Request.build_or_return(request)
     end
-    
+
+    # Returns configured client or simple default HTTP client without configuration
     def retrieve_client(request)
       unless client = config.clients[request.scheme]
-        # Allows simple default HTTP client without configuration
-        client = [:http, :https].include?(request.scheme) ? HTTPClient.new : raise_unregistered(request.scheme)
+        scheme = request.scheme
+        client = [:http, :https].include?(scheme) ? client_factory.build(scheme) : raise_unregistered(scheme)
       end
       client
     end

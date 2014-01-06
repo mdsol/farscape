@@ -45,6 +45,14 @@ module Farscape
           result.status.should == 200
         end
       end
+      
+      describe '#inspect' do
+        it 'returns a non-verbose string describing the result' do
+          request.stub(:url).and_return('some_url')
+          request.stub(:method).and_return('some_method')
+          result.inspect.should =~ /.*METHOD:some_method URL:some_url/
+        end
+      end
     end
   end
 end

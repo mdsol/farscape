@@ -12,25 +12,33 @@ module Farscape
     describe '#invoke' do
       context 'with valid arguments' do
         context 'with known scheme' do
-          before do
-            config.stub(:clients).and_return({ http: http_client })
-          end
-          
-          it 'delegates the request to the underlying scheme client' do
+          it 'defaults to using an HTTP client if no clients are configured' do
+            config.client_factory.stub(:build).with(:http).and_return(http_client)
             http_client.should_receive(:invoke).with(request)
             agent.invoke(request)
           end
           
-          it 'builds a request from the options delegates the request to the underlying scheme client' do
-            agent.invoke(options) do |request|
-              http_client.should_receive(:invoke).with(request)
+          context 'with configured clients' do
+            before do
+              config.stub(:clients).and_return({ http: http_client })
             end
-          end
-
-          it 'yields a request and delegates the request to the underlying scheme client' do
-            agent.invoke do |request|
-              request.url = 'http://example.org'
+            
+            it 'delegates the request to the underlying scheme client' do
               http_client.should_receive(:invoke).with(request)
+              agent.invoke(request)
+            end
+            
+            it 'builds a request from the options delegates the request to the underlying scheme client' do
+              agent.invoke(options) do |request|
+                http_client.should_receive(:invoke).with(request)
+              end
+            end
+  
+            it 'yields a request and delegates the request to the underlying scheme client' do
+              agent.invoke do |request|
+                request.url = 'http://example.org'
+                http_client.should_receive(:invoke).with(request)
+              end
             end
           end
         end
