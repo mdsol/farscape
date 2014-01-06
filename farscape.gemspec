@@ -21,4 +21,5 @@ Gem::Specification.new do |s|
   s.add_dependency('activesupport', '>= 3.2.0')
   s.add_dependency('addressable',   '~> 2.3.0')
   s.add_dependency('dice_bag',      '~> 0.7.0')
+  s.add_dependency('faraday',       '~> 0.8.8')
 end

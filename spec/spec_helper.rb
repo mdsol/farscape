@@ -8,12 +8,9 @@ require 'rspec'
 require 'debugger'
 require 'bundler'
 require 'webmock/rspec'
+require 'simplecov'
 
-if ENV['COVERAGE']
-  require 'simplecov'
-  SimpleCov.start
-end
-
+SimpleCov.start
 Debugger.start
 Bundler.setup
 
