@@ -1,6 +1,7 @@
 require 'faraday'
 require 'farscape/helpers'
 require 'farscape/agent/request'
+require 'farscape/agent/result'
 
 module Farscape
   class Agent
@@ -43,14 +44,7 @@ module Farscape
 
       private
       def build_request(request)
-        case request
-        when ::Farscape::Agent::Request
-          request
-        when Hash, NilClass
-          ::Farscape::Agent::Request.new(request || {})
-        else
-          raise ArgumentError, "Argument must be a Farscape::Agent::Request or a Hash. Received: #{request.inspect}."
-        end
+        Request.build_or_return(request)
       end
 
       def default_adapter
@@ -61,8 +55,8 @@ module Farscape
         request_connection = request.connection || connection
         request_env = request.to_env(request_connection)
         request_env = serialize_body(request_env)
-        
-        request_connection.app.call(request_env)
+        response = request_connection.app.call(request_env)
+        Result.new(request, response)
       end
       
       def serialize_body(env)

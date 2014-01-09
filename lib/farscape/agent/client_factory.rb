@@ -17,6 +17,10 @@ module Farscape
       def self.registered_classes
         @registered_classes ||= {}
       end
+      
+      def self.registered_classes?
+        registered_classes.any?
+      end
     end
     
     class UnregisteredClientError < StandardError; end

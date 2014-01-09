@@ -4,12 +4,13 @@ require 'farscape/agent/http_client'
 module Farscape
   class Agent
     describe HTTPClient do
+      let(:config) { Farscape::Configuration.config }
       after do
         Farscape.send(:reset_config)
       end
       
       it 'self registers itself in the client factory' do
-        client_factory = Farscape.config.client_factory
+        client_factory = config.client_factory
         %w(http https).all? { |scheme| client_factory.registered_classes[scheme.to_sym] == HTTPClient }.should be_true
       end
 
@@ -33,22 +34,22 @@ module Farscape
         
         context 'with valid arguments' do
           before do
-            stub_request(:post, "http://example.org/?page=1&per_page=2").
-              with(:body => {"name" => "Ka D'Argo"}.to_json,
+            stub_request(:post, 'http://example.org/?page=1&per_page=2').
+              with(:body => {'name' => "Ka D'Argo"}.to_json,
               :headers => {'Accept' => '*/*', 'Content-Type' => 'application/json', 'User-Agent' => 'Ruby'}).
-              to_return(:status => 200, :body => "", :headers => {})
+              to_return(:status => 200, :body => '', :headers => {})
           end
   
           context 'with a hash containing request parameters' do
             it 'transmits a request' do
-              subject.invoke(options).should_not be_nil
+              subject.invoke(options).should be_instance_of(Result)
             end
           end
           
           context 'with a request object argument' do
             it 'transmits a request' do
               request = Request.new(options)
-              subject.invoke(request)
+              subject.invoke(request).should be_instance_of(Result)
             end
           end
           
@@ -64,7 +65,7 @@ module Farscape
                 builder.connection_options = options[:connection_options]
               end
               
-              response.should_not be_nil
+              response.should be_instance_of(Result)
             end
           end
         end

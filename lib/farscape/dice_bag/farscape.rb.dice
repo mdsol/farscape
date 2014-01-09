@@ -12,6 +12,12 @@
 
 require 'farscape'
 
-Farscape.configure do
+Farscape::Configuration.configure do
+  defaults do |builder|
+    # Add some defaults 
+  end
   
+  client(:http, :https) do |builder|
+    # builder.use some_middleware
+  end
 end
