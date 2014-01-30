@@ -37,8 +37,12 @@ module Farscape
         self.frozen?
       end
       
+      def origin
+        uri.origin if uri
+      end
+      
       def scheme
-        @scheme ||= if uri = Addressable::URI.parse(url)
+        @scheme ||= if uri
           uri.scheme.downcase.to_sym if uri.scheme
         end 
       end
@@ -52,6 +56,10 @@ module Farscape
       
       def to_hash
         ATTRIBUTES.each_with_object({}) { |attribute, h| h[attribute] = send(attribute) }
+      end
+      
+      def uri
+        Addressable::URI.parse(url)
       end
 
       def url=(value)

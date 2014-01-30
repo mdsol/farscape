@@ -26,7 +26,7 @@ module Farscape
       # @param [Hash] options Optional Faraday configuration.
       def initialize(options = {})
         @connection = Faraday.new(options) do |faraday|
-          faraday.adapter default_adapter
+          faraday.adapter *default_adapter
           yield faraday if block_given?
         end
       end
@@ -52,11 +52,15 @@ module Farscape
       end
 
       def transmit(request)
-        request_connection = request.connection || connection
+        request_connection = transmit_connection(request)
         request_env = request.to_env(request_connection)
         request_env = serialize_body(request_env)
         response = request_connection.app.call(request_env)
         Result.new(request, response)
+      end
+      
+      def transmit_connection(request)
+        request.connection || connection
       end
       
       def serialize_body(env)
