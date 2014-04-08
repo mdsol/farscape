@@ -57,7 +57,7 @@ drds.transitions.keys # => ['self', 'search', 'create', 'next', 'last']
 ## API Interaction
 Entering an API takes you into it's application state-machine and, as such, the interface for interacting with that 
 application state is brain dead simple with Farscape. You have data that you read and hypermedia affordances that tell 
-you what you ca do next and you can invoke those affordances to do things. That's it.
+you what you can do next and you can invoke those affordances to do things. That's it.
 
 Farscape recognizes a number of media-types that support runtime knowledge of the underlying REST uniform-interface 
 methods. For these full-featured media-types, the interaction with with resources is as simple as a browser where 
