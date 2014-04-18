@@ -1,4 +1,6 @@
 # Farscape
+[![Build Status](https://travis-ci.org/mdsol/farscape.svg)](https://travis-ci.org/mdsol/farscape)
+
 Farscape is a hypermedia agent that simplifies consuming Hypermedia API responses. It shoots through wormholes with
 [Crichton](https://github.com/mdsol/crichton) at the helm and takes you to unknown places in the universe!
 
