@@ -6,7 +6,7 @@ gem 'yard',          '~> 0.8.5'
 gem 'rake',          '~> 0.9'
 gem 'awesome_print', '~> 1.1.0'
 gem 'redcarpet'
-gem 'faraday-zeromq', git: 'https://www.github.com:technoweenie/faraday-zeromq.git'
+gem 'faraday-zeromq', git: 'https://www.github.com/technoweenie/faraday-zeromq.git'
 
 group :development, :test do
   gem 'pry'
