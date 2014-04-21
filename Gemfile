@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 gemspec
 
-gem 'debugger',      '~> 1.5.0'
+gem 'debugger',      '~> 1.6.6'
 gem 'yard',          '~> 0.8.5'
 gem 'rake',          '~> 0.9'
 gem 'awesome_print', '~> 1.1.0'
