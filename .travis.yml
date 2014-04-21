@@ -9,4 +9,5 @@ cache: bundler
 script: "bundle exec rspec"
 before_install:
   - sudo apt-get update -qq
-  - sudo apt-get install libzmq-dev
+  - sudo apt-get install libzmq3
+  - sudo apt-get install libzmq3-dev
