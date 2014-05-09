@@ -1,9 +1,16 @@
+require 'crichton-representors'
 module Farscape
   class Agent
     class Result < Struct.new(:request, :response)
       extend Forwardable
-      
+
       def_delegators :response, :status, :headers, :body
+
+      def deserialize
+        deserializer = Crichton::Deserializer.create(response.headers['Content-Type'], response.body)
+        deserializer.deserialize
+      rescue Crichton::UnknownFormatError
+      end
 
       unless ::ENV['VERBOSE_INSPECT']
         ##
