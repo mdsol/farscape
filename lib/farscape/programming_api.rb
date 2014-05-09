@@ -4,27 +4,34 @@ module Farscape
 
   class DiscoveryClient
     #returns nil if not discovered
-    def discover(resource)
+    def discover(resource, options)
+      discoverable_resource_item = all_billboard_resources.select do |registered_resource|
+        registered_resource['href'].include?(resource)
+      end.first
+      if discoverable_resource_item
+        href = discoverable_resource_item['href']
+        discoverable_resource = SimpleAgent.get(href)
+        entry_point = discoverable_resource.entry_point
+        SimpleAgent.get(entry_point, options)
+      end
+    end
+
+    def all_billboard_resources
       url = Farscape.config[:discovery_service_url]
       if url
         billboard = SimpleAgent.get(url)
-        all_registered_resources = billboard.links.items
-        discoverable_resource_item = all_registered_resources.select do |registered_resource|
-          registered_resource['href'].include?(resource)
-        end.first
-        if discoverable_resource_item
-          href = discoverable_resource_item['href']
-          discoverable_resource = SimpleAgent.get(href)
-          entry_point = discoverable_resource.entry_point
-          SimpleAgent.get(entry_point)
-        end
+        billboard.links.items
       else
         #TODO: log instead
         puts "Discovery of resources is not available. Add a #{CONFIGURATION_FILE_PATH} file
-              with discoverable_service_url: service_url where URL should provide items with links
+              with discoverable_service_url: URL where URL should provide items with links
               to resources."
+        []
       end
+    rescue NoMethodError
+      []
     end
+
   end
 
   class SimpleAgent
@@ -58,8 +65,8 @@ module Farscape
       @config ||= ConfigFile.new.configuration
     end
 
-    def discover(resource_name)
-      DiscoveryClient.new.discover(resource_name)
+    def discover(resource_name, options = {})
+      DiscoveryClient.new.discover(resource_name, options)
     end
 
     def get(url, options={})
