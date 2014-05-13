@@ -15,7 +15,7 @@ module Farscape
 
     private
     def config_data
-      config_hash = symbolize_keys(YAML::load(IO.read(Dir.glob(CONFIGURATION_FILE_PATH).first.to_s)))
+      config_hash = symbolize_keys(YAML::load_file(Dir.glob(CONFIGURATION_FILE_PATH).first.to_s))
     rescue Errno::ENOENT
       puts "YAML configuration file couldn't be found in #{CONFIGURATION_FILE_PATH}."
     rescue Psych::SyntaxError
