@@ -1,0 +1,2 @@
+discovery_service_url: <%= configured.discovery_service_url %>
+default_accept: <%= default_accept_header || 'application/hal+json' %>
