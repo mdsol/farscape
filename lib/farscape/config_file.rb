@@ -17,9 +17,9 @@ module Farscape
     def config_data
       config_hash = symbolize_keys(YAML::load(IO.read(Dir.glob(CONFIGURATION_FILE_PATH).first.to_s)))
     rescue Errno::ENOENT
-      puts "YAML configuration file couldn't be found. Discovery not available."
+      puts "YAML configuration file couldn't be found in #{CONFIGURATION_FILE_PATH}."
     rescue Psych::SyntaxError
-      puts "YAML configuration file contains invalid syntax. Discovery not available."
+      puts "YAML configuration file contains invalid syntax."
     ensure #return is needed here or this method would return nil on exceptions
       return config_hash || {}
     end
