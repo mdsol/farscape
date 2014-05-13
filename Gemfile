@@ -1,12 +1,12 @@
 source 'https://rubygems.org'
 gemspec
 
-gem 'debugger',      '~> 1.5.0'
+gem 'debugger',      '~> 1.6.6'
 gem 'yard',          '~> 0.8.5'
 gem 'rake',          '~> 0.9'
 gem 'awesome_print', '~> 1.1.0'
 gem 'redcarpet'
-gem 'faraday-zeromq', :git => 'git@github.com:technoweenie/faraday-zeromq.git'
+gem 'faraday-zeromq', git: 'https://www.github.com/technoweenie/faraday-zeromq.git'
 
 group :development, :test do
   gem 'pry'
