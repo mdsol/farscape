@@ -1,7 +1,6 @@
 .bundle
 
 Gemfile.lock
-config/*
 coverage
 .rvmrc
 tmp
