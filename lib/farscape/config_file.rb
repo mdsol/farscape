@@ -10,7 +10,7 @@ module Farscape
       default_config = {
         default_accept: 'application/vnd.hale+json'
       }
-      default_config.merge!(config_data )
+      default_config.merge!(config_data)
     end
 
     private

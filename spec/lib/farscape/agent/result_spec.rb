@@ -6,7 +6,7 @@ module Farscape
     describe Result do
       let(:headers) { {'Content-Type' => 'application/hal+json'} }
       let(:request) { double('request') }
-      let(:response) do 
+      let(:response) do
         double('response').tap do |r|
           r.stub(:status).and_return(200)
           r.stub(:headers).and_return(headers)
@@ -21,7 +21,7 @@ module Farscape
           result.body.should == @body
         end
       end
-      
+
       describe '#headers' do
         it 'returns the headers in the response' do
           result.headers.should == headers
@@ -33,19 +33,19 @@ module Farscape
           result.request.should == request
         end
       end
-      
+
       describe '#response' do
         it 'returns the response object' do
           result.response.should == response
         end
       end
-      
+
       describe '#status' do
         it 'returns the response status code' do
           result.status.should == 200
         end
       end
-      
+
       describe '#inspect' do
         it 'returns a non-verbose string describing the result' do
           request.stub(:url).and_return('some_url')

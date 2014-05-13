@@ -9,7 +9,6 @@ module Farscape
       def deserialize
         deserializer = Crichton::Deserializer.create(response.headers['Content-Type'], response.body)
         deserializer.deserialize
-      rescue Crichton::UnknownFormatError
       end
 
       unless ::ENV['VERBOSE_INSPECT']

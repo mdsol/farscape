@@ -7,6 +7,7 @@ describe Farscape::SimpleAgent do
     let(:get_url) {'http://www.my-site.org/test_site'}
     let(:get_url_for_hale) {'http://www.my-site.org/test_site_hale'}
     let(:get_url_for_xhtml) {'http://www.my-site.org/test_site_xhtml'}
+    let(:get_url_for_unknown) {'http://www.my-site.org/test_site_trusmis'}
 
     before do
       stub_request(:get, get_url).
@@ -22,7 +23,9 @@ describe Farscape::SimpleAgent do
         with( headers: {'Accept' => 'application/xhtml'}).
         to_return(status: 200, body: {key_in_xhtml: 'my_value'}.to_json,
           headers: {'Content-Type' => 'application/json'})
+
     end
+
     it 'returns an object to access the data of the document' do
       expect(Farscape::SimpleAgent.get(get_url)).to be_instance_of Crichton::Golem
     end
@@ -34,6 +37,19 @@ describe Farscape::SimpleAgent do
     it 'accepts an options hash that overwrites defaults' do
       result = Farscape::SimpleAgent.get(get_url_for_xhtml, headers: {'Accept' => 'application/xhtml'})
       expect(result.key_in_xhtml).to eq('my_value')
+    end
+
+    context 'unknown format' do
+      before do
+        stub_request(:get, get_url_for_unknown).
+          to_return(status: 200, body: {my_key: 'my_value'}.to_json,
+            headers: {'Content-Type' => 'application/unknown_format'})
+      end
+      it 'returns an empty Golem for an unknown format' do
+        result = Farscape::SimpleAgent.get(get_url_for_unknown)
+        expect(result.properties).to be_empty
+        expect(result.links).to be_empty
+      end
     end
   end
 

@@ -25,7 +25,7 @@ module Farscape
       deserializer = Crichton::Deserializer.create(response.headers['Content-Type'], response.body)
       deserializer.deserialize
     rescue Crichton::UnknownFormatError
-      response.body #TODO: return an empty representor instead
+      Crichton::Golem.new #TODO: do not show this object class here
     end
   end
 
