@@ -8,10 +8,6 @@ Checkout the [Documentation][] for more info.
 
 NOTE: THIS IS UNDER HEAVY DEV AND IS NOT READY TO BE USED YET
 
-## ZeroMQ support
-
-Farscape has initial support for ZeroMQ, to start using ZeroMQ, add in
-your Gemfile the faraday-zeromq gem.
 
 ## API Entry
 There are various flavors of configuration that Farscape supports for entering a Hypermedia API. These all assume

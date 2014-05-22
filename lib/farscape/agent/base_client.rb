@@ -1,22 +1,11 @@
 require 'faraday'
-require 'farscape/helpers'
 require 'farscape/agent/request'
 require 'farscape/agent/result'
 
 module Farscape
   class Agent
+    # Client independent of protocol, only used for HTTP for now
     class BaseClient
-      extend ::Farscape::Helpers
-      
-      def self.client_factory
-        config.client_factory
-      end
-      private_class_method :client_factory
-      
-      def self.schemes(*schemes)
-        schemes.map(&:to_sym).each { |scheme| client_factory.register(scheme, self) }
-      end
-      private_class_method :schemes
 
       ##
       # The Faraday connection instance.
@@ -58,11 +47,11 @@ module Farscape
         response = request_connection.app.call(request_env)
         Result.new(request, response)
       end
-      
+
       def transmit_connection(request)
         request.connection || connection
       end
-      
+
       def serialize_body(env)
         env.tap do |e|
           e[:body] = e[:body].to_json if e[:body] # TODO add serialization for Content-type
