@@ -22,10 +22,10 @@ module Farscape
 
       agent = Agent.new
       response = agent.invoke(options)
-      deserializer = Crichton::Deserializer.create(response.headers['Content-Type'], response.body)
-      deserializer.deserialize
-    rescue Crichton::UnknownFormatError
-      Crichton::Golem.new #TODO: do not show this object class here
+      deserializer = Representors::Deserializer.build(response.headers['Content-Type'], response.body)
+      deserializer.to_representor
+    rescue Representors::UnknownFormatError
+      Representors::Representor.new #TODO: do not show this object class here
     end
   end
 

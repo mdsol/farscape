@@ -1,6 +1,6 @@
 require 'farscape/helpers'
 require 'farscape/agent/http_client'
-require 'farscape/agent/zeromq_client'
+require 'farscape/agent/zeromq_client' if defined?(Faraday::Adapter::ZeroMQ)
 require 'farscape/agent/request'
 
 module Farscape

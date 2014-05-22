@@ -1,4 +1,4 @@
-require 'crichton-representors'
+require 'representors'
 module Farscape
   class Agent
     class Result < Struct.new(:request, :response)
