@@ -7,8 +7,7 @@ gem 'rake',          '~> 0.9'
 gem 'awesome_print', '~> 1.1.0'
 gem 'redcarpet'
 
-gem 'faraday-zeromq', git: 'https://www.github.com/technoweenie/faraday-zeromq.git'
-gem 'crichton-representors', git: 'https://www.github.com/mdsol/crichton-representors.git', branch: 'feature/deserializers'
+gem 'representors', git: 'https://www.github.com/mdsol/crichton-representors.git', branch: 'develop'
 
 group :development, :test do
   gem 'pry'

@@ -4,16 +4,7 @@ require 'farscape/agent/http_client'
 module Farscape
   class Agent
     describe HTTPClient do
-      let(:config) { Farscape::Configuration.config }
-      after do
-        Farscape.send(:reset_config)
-      end
       
-      it 'self registers itself in the client factory' do
-        client_factory = config.client_factory
-        %w(http https).all? { |scheme| client_factory.registered_classes[scheme.to_sym] == HTTPClient }.should be_true
-      end
-
       describe '#invoke' do
         let(:subject) { HTTPClient.new }
         let(:options) do

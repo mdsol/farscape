@@ -1,19 +1,16 @@
-require 'farscape/helpers'
 require 'farscape/agent/http_client'
-require 'farscape/agent/zeromq_client'
 require 'farscape/agent/request'
 
 module Farscape
   ##
   # Agent used to make requests that wraps and delegates to configured clients specific to particular schemes.
   class Agent
-    include Helpers
-    
+
     ##
     # Invokes a request using a client configured for the resource URL scheme. Accepts a hash of request options,
     # a Farscape::Agent::Request object, or yields a block or a combination thereof. The yielded request overrides
     # values set directly as arguments.
-    # 
+    #
     # @example
     #   agent = Farscape::Agent.new
     #
@@ -45,12 +42,14 @@ module Farscape
     #   end
     #
     # @param [Hash, Farscape::Agent::Request] request The request object.
-    # 
+    #
     # @return [Farscape::Agent::Result] The encapsulated result.
     def invoke(request = nil)
       request = build_request(request)
-      yield request if block_given?
-      client = retrieve_client(request)
+      unless [:http, :https].include?(request.scheme)
+        raise UnregisteredClientError, "No client registered for scheme: '#{request.scheme}'."
+      end
+      client = HTTPClient.new
       client.invoke(request)
     end
 
@@ -59,19 +58,6 @@ module Farscape
       Request.build_or_return(request)
     end
 
-    # Returns configured client or simple default HTTP client without configuration
-    def retrieve_client(request)
-      unless client = config.clients[request.scheme]
-        scheme = request.scheme
-        client = [:http, :https].include?(scheme) ? client_factory.build(scheme) : raise_unregistered(scheme)
-      end
-      client
-    end
-    
-    def raise_unregistered(scheme)
-      raise UnregisteredClientError, "No client registered for scheme: '#{scheme}'."
-    end
-    
     class UnregisteredClientError < StandardError; end
   end
 end

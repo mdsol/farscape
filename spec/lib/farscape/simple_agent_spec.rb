@@ -27,16 +27,16 @@ describe Farscape::SimpleAgent do
     end
 
     it 'returns an object to access the data of the document' do
-      expect(Farscape::SimpleAgent.get(get_url)).to be_instance_of Crichton::Golem
+      expect(Farscape::SimpleAgent.get(get_url)).to be_instance_of Representors::Representor
     end
 
     it 'returns an object with the correct data' do
-      expect(Farscape::SimpleAgent.get(get_url_for_hale).my_key).to eq('my_value')
+      expect(Farscape::SimpleAgent.get(get_url_for_hale).properties['my_key']).to eq('my_value')
     end
 
     it 'accepts an options hash that overwrites defaults' do
       result = Farscape::SimpleAgent.get(get_url_for_xhtml, headers: {'Accept' => 'application/xhtml'})
-      expect(result.key_in_xhtml).to eq('my_value')
+      expect(result.properties['key_in_xhtml']).to eq('my_value')
     end
 
     context 'unknown format' do
@@ -48,7 +48,7 @@ describe Farscape::SimpleAgent do
       it 'returns an empty Golem for an unknown format' do
         result = Farscape::SimpleAgent.get(get_url_for_unknown)
         expect(result.properties).to be_empty
-        expect(result.links).to be_empty
+        expect(result.transitions).to be_empty
       end
     end
   end

@@ -8,6 +8,7 @@ Checkout the [Documentation][] for more info.
 
 NOTE: THIS IS UNDER HEAVY DEV AND IS NOT READY TO BE USED YET
 
+
 ## API Entry
 There are various flavors of configuration that Farscape supports for entering a Hypermedia API. These all assume
 a response with a supported Hypermedia media-type and a root that lists available resources as links.
