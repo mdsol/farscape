@@ -14,9 +14,15 @@ module Farscape
       ##
       # @param [Hash] options Optional Faraday configuration.
       def initialize(options = {})
+        # For now we are creating only this connection once and keep it in a self variable
+        # If we need it to be more dinamic we can create it every time here.
         @connection = Faraday.new(options) do |faraday|
           faraday.adapter *default_adapter
-          yield faraday if block_given?
+          Farscape::AvailableMiddleware.all.each do |middleware|
+            middleware.insert_into(faraday)
+          end
+          # Logs the headers of all our requests to the rails log file
+          faraday.use Faraday::Response::Logger, Rails.logger if defined?(Rails)
         end
       end
 
@@ -32,6 +38,7 @@ module Farscape
       end
 
       private
+
       def build_request(request)
         Request.build_or_return(request)
       end

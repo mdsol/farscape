@@ -11,15 +11,6 @@ module Farscape
           end
         end
       end
-
-      describe '#connection' do
-        it 'returns Faraday connection configured for the agent' do
-          conn = nil
-          agent = BaseClient.new { |connection| conn = connection }
-
-          agent.connection.should == conn
-        end
-      end
     end
   end
 end
