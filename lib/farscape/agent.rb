@@ -46,9 +46,6 @@ module Farscape
     # @return [Farscape::Agent::Result] The encapsulated result.
     def invoke(request = nil)
       request = build_request(request)
-      unless [:http, :https].include?(request.scheme)
-        raise UnregisteredClientError, "No client registered for scheme: '#{request.scheme}'."
-      end
       client = HTTPClient.new
       client.invoke(request)
     end

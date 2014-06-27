@@ -27,15 +27,15 @@ module Farscape
         context 'without known scheme' do
           it 'raises an error for a non-existent scheme' do
             request = Agent::Request.new(url: 'bogus_scheme://example.org')
-            expect { agent.invoke(request) }.to raise_error(Agent::UnregisteredClientError)
+            expect { agent.invoke(request) }.to raise_error(Agent::MalformedRequestError)
           end
 
           it 'raises an error for a relative URL' do
-            expect { agent.invoke(url: 'example.org') }.to raise_error(Agent::UnregisteredClientError)
+            expect { agent.invoke(url: 'example.org') }.to raise_error(Agent::MalformedRequestError)
           end
 
           it 'raises an error for a nil argument without a block to set a valid url' do
-            expect { agent.invoke(url: 'example.org') }.to raise_error(Agent::UnregisteredClientError)
+            expect { agent.invoke(url: 'example.org') }.to raise_error(Agent::MalformedRequestError)
           end
         end
       end
