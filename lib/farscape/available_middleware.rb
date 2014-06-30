@@ -3,11 +3,12 @@ module Farscape
     class << self
 
       def inherited(base)
+        @middlewares ||= []
         @middlewares << base
       end
 
       def all
-        @middlewares ||= []
+        @middlewares || []
       end
 
       def clear_middlewares
