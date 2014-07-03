@@ -1,3 +1,4 @@
+require 'spec_helper'
 
 describe Farscape do
   describe  "basic invoke" do
@@ -18,27 +19,57 @@ describe Farscape do
 
   describe '.invoke' do
     let(:url) { 'http://www.example.com/mumi'}
+    let(:self_url) { 'http://www.example.com/mike'}
+    let(:publisher_url) { 'http://www.example.com/acme_books'}
+    let(:publisher_body) {
+      {
+        address: {street: 'roadrunner 1'},
+        _links: {
+          self: {
+            href: publisher_url,
+          }
+        }
+      }.to_json
+    }
+
     let(:body) {
-        {
-          attributes:{
-            'title' => {value: 'The Neverending Story'},
+      {
+        title: {value: 'The Neverending Story'},
+        _links: {
+          self: {
+            href: self_url,
           },
-          transitions: [
-            {
-            href: '/mike',
-            rel: 'self',
-            }
-          ]
-        }.to_json
+          publisher: {
+            href: publisher_url,
+          }
+        }
+      }.to_json
     }
 
     before(:each) do
       stub_request(:get, "http://www.example.com/mumi").
-             with(:headers => {'Accept'=>'application/vnd.hale+json', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
-             to_return(:status => 200, :body => body, :headers => {})
+        with(:headers => {'Accept'=>'application/vnd.hale+json', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
+        to_return(:status => 200, :body => body, :headers => {'Content-Type'=>'application/vnd.hale+json'})
+
+     stub_request(:get, "http://www.example.com/mike").
+       with(:headers => {'Accept'=>'application/vnd.hale+json', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
+       to_return(:status => 200, :body => body, :headers => {'Content-Type'=>'application/vnd.hale+json'})
+
+     stub_request(:get, "http://www.example.com/acme_books").
+       with(:headers => {'Accept'=>'application/vnd.hale+json', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
+       to_return(:status => 200, :body => publisher_body, :headers => {'Content-Type'=>'application/vnd.hale+json'})
     end
+
     it "calls SimpleAgent.invoke" do
-      expect(Farscape.invoke(url).properties).to eq({'title' => {value: 'The Neverending Story'}})
+      expect(Farscape.invoke(url).properties).to eq({'title' => {'value' => 'The Neverending Story'}})
+    end
+
+    it 'follows self links' do
+      expect(Farscape.invoke(url).invoke('self').properties).to eq({'title' => {'value' => 'The Neverending Story'}})
+    end
+
+    it 'follows self links' do
+      expect(Farscape.invoke(url).invoke('publisher').properties).to eq({'address' => {'street' => 'roadrunner 1'}})
     end
 
   end
