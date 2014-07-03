@@ -22,9 +22,9 @@ module Farscape
 
       agent = Agent.new
       response = agent.invoke(options)
-      deserializer = Representors::Deserializer.build(response.headers['Content-Type'], response.body)
+      deserializer = Representors::DeserializerFactory.build(response.headers['Content-Type'], response.body)
       deserializer.to_representor
-    rescue Representors::UnknownFormatError
+    rescue Representors::UnknownMediaTypeError
       Representors::Representor.new #TODO: do not show this object class here
     end
   end
