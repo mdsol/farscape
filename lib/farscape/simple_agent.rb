@@ -6,8 +6,7 @@ module Farscape
 # In short it is easier to use and it is more integrated with our tools.
   class SimpleAgent
     # Convenience method to DRY adding get to the options
-    def self.get(url, options={})
-      options.merge!({method: 'GET'})
+    def self.invoke(url, options={})
       SimpleAgent.new.perform_request(url, options)
     end
 
@@ -19,13 +18,14 @@ module Farscape
         headers: { 'accept' => Farscape.config[:default_accept] }
       }
       options = default_options.merge!(options)
-
       agent = Agent.new
       response = agent.invoke(options)
       deserializer = Representors::Deserializer.build(response.headers['Content-Type'], response.body)
-      deserializer.to_representor
+
+      Representor.new(deserializer.to_representor, response)
     rescue Representors::UnknownFormatError
-      Representors::Representor.new #TODO: do not show this object class here
+      raise Farscape::ResponseError.new(response),
+        "The content type #{response.headers['Content-Type']} can not be deserializer"
     end
   end
 

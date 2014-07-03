@@ -11,8 +11,8 @@ module Farscape
 
     # Gets and resturns the respresentation as an object of some url which should have a document
     # @param [String] URL
-    def get(url, options={})
-      SimpleAgent.get(url, options)
+    def invoke(url, options={})
+      SimpleAgent.invoke(url, options)
     end
 
   end
