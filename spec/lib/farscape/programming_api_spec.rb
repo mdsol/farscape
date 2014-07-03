@@ -78,8 +78,20 @@ describe Farscape do
   describe '.invoke post' do
     let(:url) { 'http://www.example.com/mumi'}
     let(:self_url) { 'http://www.example.com/mike'}
-    let(:publisher_url) { 'http://www.example.com/acme_books'}
+    let(:create_url) { 'http://www.example.com/create_book'}
+    let(:new_title) { 'Slaughter house 5'}
 
+    let(:create_response) {
+      {
+        title: {value: new_title},
+        _links: {
+          self: {
+            href: self_url,
+          }
+        }
+      }.to_json
+
+    }
     let(:body) {
       {
         title: {value: 'The Neverending Story'},
@@ -103,9 +115,22 @@ describe Farscape do
       }.to_json
     }
 
-    it 'follows self links' do
-      expect(Farscape.invoke(url).invoke('create', {title: 'Slaughter house 5'}).properties).to eq(1)
+    before(:each) do
+      stub_request(:get, "http://www.example.com/mumi").
+        with(:headers => {'Accept'=>'application/vnd.hale+json', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
+        to_return(:status => 200, :body => body, :headers => {'Content-Type'=>'application/vnd.hale+json'})
+
+
+      stub_request(:post, "http://www.example.com/create_book").
+        with(:body => "\"{\\\"title\\\":\\\"Slaughter house 5\\\"}\"",
+             :headers => {'Accept'=>'application/vnd.hale+json', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
+        to_return(:status => 200, :body => create_response, :headers => {'Content-Type'=>'application/vnd.hale+json'})
     end
+
+    it 'can post data' do
+      expect(Farscape.invoke(url).invoke('create', {title: new_title}).properties).to eq({'title' => {'value' => new_title}})
+    end
+  end
 
 
 end
