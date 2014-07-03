@@ -7,7 +7,7 @@ gem 'rake',          '~> 0.9'
 gem 'awesome_print', '~> 1.1.0'
 gem 'redcarpet'
 
-gem 'representors', git: 'https://www.github.com/mdsol/crichton-representors.git', branch: 'develop'
+gem 'representors', git: 'https://www.github.com/mdsol/crichton-representors.git', tag: 'v0.0.1.pre'
 
 group :development, :test do
   gem 'pry'

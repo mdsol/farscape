@@ -20,10 +20,10 @@ module Farscape
       options = default_options.merge!(options)
       agent = Agent.new
       response = agent.invoke(options)
-      deserializer = Representors::Deserializer.build(response.headers['Content-Type'], response.body)
 
+      deserializer = Representors::DeserializerFactory.build(response.headers['Content-Type'], response.body)
       Representor.new(deserializer.to_representor, response)
-    rescue Representors::UnknownFormatError
+    rescue Representors::UnknownMediaTypeError
       raise Farscape::ResponseError.new(response),
         "The content type #{response.headers['Content-Type']} can not be deserializer"
     end
