@@ -17,7 +17,7 @@ describe Farscape do
     end
   end
 
-  describe '.invoke' do
+  describe '.invoke get' do
     let(:url) { 'http://www.example.com/mumi'}
     let(:self_url) { 'http://www.example.com/mike'}
     let(:publisher_url) { 'http://www.example.com/acme_books'}
@@ -73,5 +73,40 @@ describe Farscape do
     end
 
   end
+
+
+  describe '.invoke post' do
+    let(:url) { 'http://www.example.com/mumi'}
+    let(:self_url) { 'http://www.example.com/mike'}
+    let(:publisher_url) { 'http://www.example.com/acme_books'}
+
+    let(:body) {
+      {
+        title: {value: 'The Neverending Story'},
+        _links: {
+          self: {
+            href: self_url,
+          },
+          create: {
+            href: create_url,
+            method: 'POST',
+            data: {
+              title: {
+                minlength: 4,
+                maxlength: 30,
+                required: true,
+                profile: "http://alps.io/schema.org/Person#givenName"
+              }
+            }
+          }
+        }
+      }.to_json
+    }
+
+    it 'follows self links' do
+      expect(Farscape.invoke(url).invoke('create', {title: 'Slaughter house 5'}).properties).to eq(1)
+    end
+
+
 end
 
