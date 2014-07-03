@@ -15,8 +15,8 @@ a response with a supported Hypermedia media-type and a root that lists availabl
 
 ### A Hypermedia API
 For a interacting with an API (or individual service that supports a list of resources at its root), you enter the
-API and follow your nose using the `enter` method on the agent. This method returns a [Farscape::Representor]() 
-instance with a simple state-machine interface of `attributes` (data) and `transitions` (link/form affordances) for 
+API and follow your nose using the `enter` method on the agent. This method returns a [Farscape::Representor]()
+instance with a simple state-machine interface of `properties` (data) and `transitions` (link/form affordances) for
 interacting with the resource representations.
 
 ```ruby
@@ -36,7 +36,7 @@ resources.transitions.keys # => ['http://example.com/rel/drds', 'http://example.
 
 ### A Hypermedia Discovery Service
 For interacting with a discovery service, Farscape supports follow your nose entry to select a registered resource
-or immediately loading a discoverable resource if known to be regsitered in the service a priori. 
+or immediately loading a discoverable resource if known to be regsitered in the service a priori.
 
 ```ruby
 agent = Farscape::Agent.new('http://example.com/my_discovery_service')
@@ -58,12 +58,12 @@ drds.transitions.keys # => ['self', 'search', 'create', 'next', 'last']
 ```
 
 ## API Interaction
-Entering an API takes you into it's application state-machine and, as such, the interface for interacting with that 
-application state is brain dead simple with Farscape. You have data that you read and hypermedia affordances that tell 
+Entering an API takes you into it's application state-machine and, as such, the interface for interacting with that
+application state is brain dead simple with Farscape. You have data that you read and hypermedia affordances that tell
 you what you can do next and you can invoke those affordances to do things. That's it.
 
-Farscape recognizes a number of media-types that support runtime knowledge of the underlying REST uniform-interface 
-methods. For these full-featured media-types, the interaction with with resources is as simple as a browser where 
+Farscape recognizes a number of media-types that support runtime knowledge of the underlying REST uniform-interface
+methods. For these full-featured media-types, the interaction with with resources is as simple as a browser where
 implementation of requests is completely abstracted from the user.
 
 The following simple examples highlight interacting with resource state-machines using Farscape.
@@ -131,13 +131,13 @@ new_drd.attributes # => { name: 'Pike' }
 new_drd.transitions # => ['self', 'edit', 'delete', 'deactivate', 'leviathan']
 ```
 
-For more examples and information on using Faraday with media-types that require specifying uniform-interface methods 
+For more examples and information on using Faraday with media-types that require specifying uniform-interface methods
 and other protocol idioms when invoking transitions, see [Using Farscape]().
 
 ## Bookmarks
-Following you nose is great, but if you have been there and you want to get back quickly, bookmarks are sweet 
-(particularly since Farscape can cache prior requests using rack middleware). A bookmark is simple hash that allows 
-easily reloading a prior state of a resources (of course things may have changed since you were there so you must 
+Following you nose is great, but if you have been there and you want to get back quickly, bookmarks are sweet
+(particularly since Farscape can cache prior requests using rack middleware). A bookmark is simple hash that allows
+easily reloading a prior state of a resources (of course things may have changed since you were there so you must
 temper your assumptions).
 
 ```ruby
@@ -149,7 +149,7 @@ drds_bookmark = self_transition.bookmark
 drds = agent.invoke(bookmark: drds_bookmark)
 ```
 
-With bookmarks, you can decorate links in UI applications to make it simple to enter state on the backend when 
+With bookmarks, you can decorate links in UI applications to make it simple to enter state on the backend when
 interacting with the UI links and forms.
 
 ## Contributing
