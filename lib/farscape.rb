@@ -1,5 +1,6 @@
 require 'active_support/all'
 require 'farscape/dice_bag/template'
+require 'farscape/available_middleware'
 require 'farscape/agent'
 require 'farscape/config_file'
 require 'farscape/simple_agent'
