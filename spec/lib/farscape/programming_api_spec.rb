@@ -48,15 +48,15 @@ describe Farscape do
 
     before(:each) do
       stub_request(:get, "http://www.example.com/mumi").
-        with(:headers => {'Accept'=>'application/vnd.hale+json', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
+        with(:headers => {'Accept'=>'application/vnd.hale+json', 'User-Agent'=>'Ruby'}).
         to_return(:status => 200, :body => body, :headers => {'Content-Type'=>'application/vnd.hale+json'})
 
      stub_request(:get, "http://www.example.com/mike").
-       with(:headers => {'Accept'=>'application/vnd.hale+json', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
+       with(:headers => {'Accept'=>'application/vnd.hale+json', 'User-Agent'=>'Ruby'}).
        to_return(:status => 200, :body => body, :headers => {'Content-Type'=>'application/vnd.hale+json'})
 
      stub_request(:get, "http://www.example.com/acme_books").
-       with(:headers => {'Accept'=>'application/vnd.hale+json', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
+       with(:headers => {'Accept'=>'application/vnd.hale+json', 'User-Agent'=>'Ruby'}).
        to_return(:status => 200, :body => publisher_body, :headers => {'Content-Type'=>'application/vnd.hale+json'})
     end
 
@@ -117,13 +117,13 @@ describe Farscape do
 
     before(:each) do
       stub_request(:get, "http://www.example.com/mumi").
-        with(:headers => {'Accept'=>'application/vnd.hale+json', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
+        with(:headers => {'Accept'=>'application/vnd.hale+json', 'User-Agent'=>'Ruby'}).
         to_return(:status => 200, :body => body, :headers => {'Content-Type'=>'application/vnd.hale+json'})
 
 
       stub_request(:post, "http://www.example.com/create_book").
         with(:body => "\"{\\\"title\\\":\\\"Slaughter house 5\\\"}\"",
-             :headers => {'Accept'=>'application/vnd.hale+json', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
+             :headers => {'Accept'=>'application/vnd.hale+json', 'User-Agent'=>'Ruby'}).
         to_return(:status => 200, :body => create_response, :headers => {'Content-Type'=>'application/vnd.hale+json'})
     end
 

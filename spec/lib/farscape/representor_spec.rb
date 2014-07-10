@@ -35,10 +35,12 @@ module Farscape
       }
       let(:representor_data) { Representors::DeserializerFactory.build(:hal, document).to_representor}
       let(:representor) {Representor.new(representor_data, 'result')}
+
       it 'returns an array with one Farscape transition' do
         expect(representor.transitions).to have(1).item
         expect(representor.transitions.first).to be_instance_of(Farscape::Transition)
       end
+
       it 'returns the proper transition' do
         expect(representor.transitions.first.rel).to eq('self')
       end
@@ -47,7 +49,7 @@ module Farscape
     describe '#invoke' do
       before(:each) do
         stub_request(:get, "http://www.authors.com/mike").
-          with(:headers => {'Accept'=>'application/vnd.hale+json', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
+          with(:headers => {'Accept'=>'application/vnd.hale+json', 'User-Agent'=>'Ruby'}).
           to_return(:status => 200, :body => author_document, :headers => {'Content-Type' => 'application/hal+json'})
       end
       let(:author_name) {'Michael Ende'}
