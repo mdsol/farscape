@@ -29,7 +29,7 @@ resources.transitions.keys # => ['http://example.com/rel/drds', 'http://example.
 
 ### A Hypermedia Discovery Service
 For interacting with a discovery service, Farscape supports follow your nose entry to select a registered resource
-or immediately loading a discoverable resource if known to be regsitered in the service a priori. 
+or immediately loading a discoverable resource if known to be registered in the service *a priori*. 
 
 ```ruby
 agent = Farscape::Agent.new('http://example.com/my_discovery_service')
@@ -51,7 +51,7 @@ drds.transitions.keys # => ['self', 'search', 'create', 'next', 'last']
 ```
 
 ## API Interaction
-Entering an API takes you into it's application state-machine and, as such, the interface for interacting with that 
+Entering an API takes you into its application state-machine and, as such, the interface for interacting with that 
 application state is brain dead simple with Farscape. You have data that you read and hypermedia affordances that tell 
 you what you can do next and you can invoke those affordances to do things. That's it.
 
@@ -128,9 +128,8 @@ For more examples and information on using Faraday with media-types that require
 and other protocol idioms when invoking transitions, see [Using Farscape]().
 
 ## Bookmarks
-Following you nose is great, but if you have been there and you want to get back quickly, bookmarks are sweet 
-(particularly since Farscape can cache prior requests using rack middleware). A bookmark is simple hash that allows 
-easily reloading a prior state of a resources (of course things may have changed since you were there so you must 
+Following your nose is great, but if you have been there and you want to get back quickly, bookmarks are sweet 
+(particularly since Farscape can cache prior requests). A bookmark is a simple hash that allows easily reloading a prior state of a resources by replaying the steps necessary to get there (of course things may have changed since you were there so you must 
 temper your assumptions).
 
 ```ruby
