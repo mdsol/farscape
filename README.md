@@ -162,7 +162,7 @@ Request parameters can be passed as a hash or as a block.
 
 drd = drds.create!(name: 'Pike')
 drd = drds.create! { |builder| builder.attributes = {name: 'Pike'} }
-drd = drds.transitions['create'].invoke{ |d|d.attributes = {name: 'Pike'} }
+drd = drds.transitions['create'].invoke{ |d| d.attributes = {name: 'Pike'} }
 ```
 
 Attributes are read-only.
