@@ -144,6 +144,43 @@ drds = agent.invoke(bookmark: drds_bookmark)
 With bookmarks, you can decorate links in UI applications to make it simple to enter state on the backend when 
 interacting with the UI links and forms.
 
+## Alternate Interface
+
+For developers more used to ActiveRecord syntax, Farscape resources also expose all transitions and attributes as Ruby methods. Safe (i.e. read) transitions are exposed verbatim.
+
+```ruby
+drd.leviathan # => Equivalent to drd.transitions['leviathan'].invoke
+```
+
+Unsafe transitions have an exclamation point at the end.
+
+```ruby
+drd.deactivate # => Raises NoMethodError
+
+drd.deactivate! # => Equivalent to drd = drd.transitions['deactivate'].invoke
+```
+
+Request parameters can be passed as a hash or as a block.
+
+```ruby
+# The following are all equivalent:
+
+drd = drds.create!(name: 'Pike')
+drd = drds.create! { |builder| builder.attributes = {name: 'Pike'} }
+drd = drds.transitions['create'].invoke{ |d|d.attributes = {name: 'Pike'} }
+```
+
+Attributes are read-only.
+
+```ruby
+drd.name # => "Pike"
+
+drd.name = 'Susan' # => Raises NoMethodError
+```
+
+If an attribute or transition's name conflicts with an existing method or reserved word, it will not be methodized and must be accessed through the hash interface.
+
+
 ## Contributing
 See [CONTRIBUTING][] for details.
 
