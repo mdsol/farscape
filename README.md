@@ -43,11 +43,6 @@ drds.attributes # => { total_count: 25, items: [...] }
 drds.transitions.keys # => ['self', 'search', 'create', 'next', 'last']
 
 agent.enter('http://example.com/rel/unknown_resource') # => raises Farscape::Agent::UnknownEntryPoint
-
-# For Services (and APIs) that support application/json-home
-drds = agent.enter(:drds)
-drds.attributes # => { total_count: 25, items: [...] }
-drds.transitions.keys # => ['self', 'search', 'create', 'next', 'last']
 ```
 
 ## API Interaction
@@ -133,7 +128,7 @@ Following your nose is great, but if you have been there and you want to get bac
 temper your assumptions).
 
 ```ruby
-drds = agent.enter(:drds)
+drds = agent.enter
 
 self_transition = drds.transitions['self']
 drds_bookmark = self_transition.bookmark
