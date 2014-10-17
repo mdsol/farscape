@@ -25,13 +25,6 @@ agent = Farscape::Agent.new('http://example.com/my_api')
 resources = agent.enter
 resources.attributes # => { meta: 'data', or: 'other data' }
 resources.transitions.keys # => ['http://example.com/rel/drds', 'http://example.com/rel/leviathans']
-
-# Alternate
-agent = Farscape::Agent.new
-
-resources = agent.enter('http://example.com/my_api')
-resources.attributes # => { meta: 'data', or: 'other data' }
-resources.transitions.keys # => ['http://example.com/rel/drds', 'http://example.com/rel/leviathans']
 ```
 
 ### A Hypermedia Discovery Service
