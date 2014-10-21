@@ -122,23 +122,6 @@ new_drd.transitions # => ['self', 'edit', 'delete', 'deactivate', 'leviathan']
 For more examples and information on using Faraday with media-types that require specifying uniform-interface methods 
 and other protocol idioms when invoking transitions, see [Using Farscape]().
 
-## Bookmarks
-Following your nose is great, but if you have been there and you want to get back quickly, bookmarks are sweet 
-(particularly since Farscape can cache prior requests). A bookmark is a simple hash that allows easily reloading a prior state of a resources by replaying the steps necessary to get there (of course things may have changed since you were there so you must 
-temper your assumptions).
-
-```ruby
-drds = agent.enter
-
-self_transition = drds.transitions['self']
-drds_bookmark = self_transition.bookmark
-
-drds = agent.invoke(bookmark: drds_bookmark)
-```
-
-With bookmarks, you can decorate links in UI applications to make it simple to enter state on the backend when 
-interacting with the UI links and forms.
-
 ## Alternate Interface
 
 For developers more used to ActiveRecord syntax, Farscape resources also expose all transitions and attributes as Ruby methods. Safe (i.e. read) transitions are exposed verbatim.
