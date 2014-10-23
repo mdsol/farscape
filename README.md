@@ -29,7 +29,7 @@ resources.transitions.keys # => ['http://example.com/rel/drds', 'http://example.
 
 ### A Hypermedia Discovery Service
 For interacting with a discovery service, Farscape supports follow your nose entry to select a registered resource
-or immediately loading a discoverable resource if known to be registered in the service *a priori*. 
+or immediately loading a discoverable resource if known to be registered in the service *a priori*.
 
 ```ruby
 agent = Farscape::Agent.new('http://example.com/my_discovery_service')
@@ -68,6 +68,10 @@ drds = drds_transition.invoke
 self_transition = drds.transitions['self']
 reloaded_drds = self_transition.invoke
 ```
+
+### Explore
+
+The sample code given below often depicts the client making *assumptions* that a specific transition or attribute will be available in a certain state. *This is unsafe*, and production code should include conditionals or rescues for the case when an assumption proves incorrect. Whenever possible, Farscape should be used more dynamically, by letting user interaction or a crawling algorithm drive transitions.
 
 ### Apply query parameters
 ```ruby
