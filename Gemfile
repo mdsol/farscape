@@ -11,6 +11,8 @@ gem 'representors', git: 'https://www.github.com/mdsol/crichton-representors.git
 
 group :development, :test do
   gem 'pry'
+  gem 'crichton_test_service', path: '~/Desktop/crichton_test_service'
+  gem 'crichton', git: 'git@github.com:mdsol/crichton.git', branch: 'develop'
 end
 
 group :test do
