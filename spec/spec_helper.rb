@@ -1,5 +1,7 @@
+RAILS_PORT = 1234
 SPEC_DIR = File.expand_path("..", __FILE__)
 lib_dir = File.expand_path("../lib", SPEC_DIR)
+
 
 $LOAD_PATH.unshift(lib_dir)
 $LOAD_PATH.uniq!
@@ -9,12 +11,14 @@ require 'debugger'
 require 'bundler'
 require 'webmock/rspec'
 require 'simplecov'
+require 'crichton_test_service'
 
 SimpleCov.start
 Debugger.start
 Bundler.setup
 
 require 'farscape'
+CrichtonTestService.initialize_rails!
 
 Dir["#{SPEC_DIR}/support/*.rb"].each { |f| require f }
 
@@ -32,4 +36,17 @@ RSpec.configure do |config|
 
   config.include Support::Helpers
   config.include Support::DiceBagHelpers
+
+  config.before(:suite) do
+    old_handler = trap(:INT) {
+      Process.kill(:INT, @rails_pid) if @rails_pid
+      old_handler.call if old_handler.respond_to?(:call)
+    }
+    WebMock.disable!
+    @rails_pid = CrichtonTestService.spawn_rails_process!(RAILS_PORT)
+  end
+
+  config.after(:suite) do
+    Process.kill(:INT, @rails_pid) if @rails_pid
+  end
 end
