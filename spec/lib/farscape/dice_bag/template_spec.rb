@@ -12,7 +12,7 @@ module Farscape
       end
       
       describe '#templates_location' do
-        it 'returns a config location' do
+        xit 'returns a config location' do
           subject.templates_location.should == 'config/'
         end
         
