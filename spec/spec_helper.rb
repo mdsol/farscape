@@ -9,7 +9,6 @@ $LOAD_PATH.uniq!
 require 'rspec'
 require 'debugger'
 require 'bundler'
-require 'webmock/rspec'
 require 'simplecov'
 require 'faraday' #TODO move require for faraday into crichton test service
 require 'crichton_test_service'
@@ -34,14 +33,12 @@ RSpec.configure do |config|
   config.order = 'random' unless ENV['RANDOMIZE'] == 'false'
 
   config.include Support::Helpers
-  config.include Support::DiceBagHelpers
 
   config.before(:suite) do
     old_handler = trap(:INT) {
       Process.kill(:INT, $crichton_test_rails_pid) if $crichton_test_rails_pid
       old_handler.call if old_handler.respond_to?(:call)
     }
-    WebMock.disable!
     $crichton_test_rails_pid = CrichtonTestService.spawn_rails_process!(RAILS_PORT)
   end
 
