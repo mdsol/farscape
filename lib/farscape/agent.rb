@@ -1,60 +1,33 @@
+require 'farscape/representor'
 require 'farscape/agent/http_client'
-require 'farscape/agent/request'
 
 module Farscape
-  ##
-  # Agent used to make requests that wraps and delegates to configured clients specific to particular schemes.
   class Agent
+    PROTOCOL = :http
 
-    ##
-    # Invokes a request using a client configured for the resource URL scheme. Accepts a hash of request options,
-    # a Farscape::Agent::Request object, or yields a block or a combination thereof. The yielded request overrides
-    # values set directly as arguments.
-    #
-    # @example
-    #   agent = Farscape::Agent.new
-    #
-    #   # The following are equivalent
-    #   options = {
-    #     url: 'http://example.org',
-    #     method: 'POST',
-    #     params: {page: 1, per_page: 2},
-    #     headers: {'Content-Type' => 'application/json'},
-    #     body: {name: "Ka D'Argo"},
-    #     connection: double('faraday_connection'),
-    #     connection_options: {some: 'options'},
-    #     env_options: {add_to: 'rack_env'}
-    #   }
-    #   result = agent.invoke(options)
-    #
-    #   request = Faraday::Agent::Request.new(options)
-    #   result = agent.invoke(request)
-    #
-    #   result = agent.invoke do |request|
-    #     request.url 'http://example.org'
-    #     request.method = 'POST',
-    #     request.params = { page: 1, per_page: 2 },
-    #     request.headers = { 'Content-Type' => 'application/json' },
-    #     request.body = { name: "Ka D'Argo" },
-    #     request.connection = double( 'faraday_connection' ),
-    #     request.connection_options = { some: 'options' },
-    #     request.env_options = { add_to: 'rack_env' }
-    #   end
-    #
-    # @param [Hash, Farscape::Agent::Request] request The request object.
-    #
-    # @return [Farscape::Agent::Result] The encapsulated result.
-    def invoke(request = nil)
-      request = build_request(request)
-      client = HTTPClient.new
-      client.invoke(request)
+    attr_reader :media_type
+    attr_reader :entry_point
+
+    def initialize(entry = nil, media = :hale)
+      @entry_point = entry
+      @media_type = media
     end
 
-    private
-    def build_request(request)
-      Request.build_or_return(request)
+    def enter(entry = entry_point)
+      @entry_point ||= entry
+      raise "No Entry Point Provided!" unless entry
+      response = client.invoke(url: entry, headers: get_accept_header(media_type))
+      Representor.new(media_type, response.body, self)
     end
 
-    class UnregisteredClientError < StandardError; end
+    # TODO share this information with serialization factory base
+    def get_accept_header(media_type)
+      media_types = { hale: 'application/vnd.hale+json' }
+      { 'Accept' => media_types[media_type] }
+    end
+
+    def client
+      { http: HTTPClient }[PROTOCOL].new
+    end
   end
 end
