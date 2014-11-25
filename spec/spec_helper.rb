@@ -11,6 +11,7 @@ require 'debugger'
 require 'bundler'
 require 'webmock/rspec'
 require 'simplecov'
+require 'faraday' #TODO move require for faraday into crichton test service
 require 'crichton_test_service'
 
 SimpleCov.start
@@ -18,8 +19,6 @@ Debugger.start
 Bundler.setup
 
 require 'farscape'
-CrichtonTestService.initialize_rails!
-
 Dir["#{SPEC_DIR}/support/*.rb"].each { |f| require f }
 
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
@@ -39,14 +38,14 @@ RSpec.configure do |config|
 
   config.before(:suite) do
     old_handler = trap(:INT) {
-      Process.kill(:INT, @rails_pid) if @rails_pid
+      Process.kill(:INT, $crichton_test_rails_pid) if $crichton_test_rails_pid
       old_handler.call if old_handler.respond_to?(:call)
     }
     WebMock.disable!
-    @rails_pid = CrichtonTestService.spawn_rails_process!(RAILS_PORT)
+    $crichton_test_rails_pid = CrichtonTestService.spawn_rails_process!(RAILS_PORT)
   end
 
   config.after(:suite) do
-    Process.kill(:INT, @rails_pid) if @rails_pid
+    Process.kill(:INT, $crichton_test_rails_pid)
   end
 end
