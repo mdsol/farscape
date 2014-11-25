@@ -1,4 +1,3 @@
-require 'active_support/all'
 require 'farscape/dice_bag/template'
 require 'farscape/agent'
 require 'farscape/config_file'
