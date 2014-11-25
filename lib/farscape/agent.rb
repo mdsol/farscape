@@ -13,12 +13,10 @@ module Farscape
       @media_type = media
     end
 
-    def enter(entry = nil)
+    def enter(entry = entry_point)
       @entry_point ||= entry
-      url = entry || entry_point
-      raise "No Entry Point Provided!" unless url
-
-      response = client.invoke(url: url, headers: get_accept_header(media_type))
+      raise "No Entry Point Provided!" unless entry
+      response = client.invoke(url: entry, headers: get_accept_header(media_type))
       Representor.new(media_type, response.body, self)
     end
 
