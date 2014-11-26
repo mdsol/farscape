@@ -1,5 +1,5 @@
 require 'farscape/representor'
-require 'farscape/agent/http_client'
+require 'farscape/client/http_client'
 
 module Farscape
   class Agent
