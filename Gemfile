@@ -11,7 +11,8 @@ gem 'representors', git: 'https://www.github.com/mdsol/crichton-representors.git
 
 group :development, :test do
   gem 'pry'
-  gem 'crichton_test_service', path: '~/Desktop/crichton_test_service'
+  #TODO replace both crichton and crichton_test_service with references to stable branches when ready.
+  gem 'crichton_test_service', git: 'git@github.com:csavage-mdsol/crichton_test_service.git', branch: 'develop'
   gem 'crichton', git: 'git@github.com:mdsol/crichton.git', branch: 'develop'
 end
 
