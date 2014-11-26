@@ -1,4 +1,4 @@
-require 'farscape/agent/base_client'
+require 'farscape/client/base_client'
 
 module Farscape
   class Agent
