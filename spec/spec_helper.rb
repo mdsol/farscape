@@ -7,6 +7,7 @@ $LOAD_PATH.unshift(lib_dir)
 $LOAD_PATH.uniq!
 
 require 'rspec'
+require 'pry'
 require 'debugger'
 require 'bundler'
 require 'simplecov'
