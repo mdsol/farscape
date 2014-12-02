@@ -4,6 +4,8 @@ require 'ostruct'
 module Farscape
   class Transition < Representors::Transition
 
+    EMPTY_BODIES = { hale: "{}" }
+
     def initialize(transition_hash, agent)
       @agent = agent
       super(transition_hash)
@@ -21,7 +23,7 @@ module Farscape
       call_options[:body] = options.attributes if options.attributes
 
       response = @agent.client.invoke(call_options)
-      Representor.new(@agent.media_type, response.body, @agent)
+      Representor.new(@agent.media_type, response.body || EMPTY_BODIES[@agent.media_type], @agent)
     end
   end
 end
