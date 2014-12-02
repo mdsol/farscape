@@ -29,11 +29,16 @@ describe Farscape::Representor do
       let(:name) { 'Brave New DRD' }
       let(:params) { {name: name}.merge(can_do_hash) }
 
+      #TODO fix crichton test service, its printing out the entire collection of DRDs.  Also, add
+      # a schema load for blowing out the db to the test service.
       it 'can delete a drd' do
-        #TODO fix this, expects self to include query string, otherwise identical
-        #expect(@drd.transitions['self'].invoke { |r| r.parameters = can_do_hash }.to_hash).to eq(@drd.to_hash)
-        @drd.transitions['destroy'].invoke
-        expect(@drd.transitions['self'].invoke { |r| r.parameters = can_do_hash }.to_hash).to_not eq(@drd.to_hash)
+        # NB We compare attributes as the self link will differ between the two calls
+        drd_attributes = @drd.to_hash[:attributes]
+        self_attributes = @drd.transitions['self'].invoke { |r| r.parameters = can_do_hash }.to_hash[:attributes]
+        expect(self_attributes).to eq(drd_attributes)
+        @drd.transitions['delete'].invoke
+        error_attributes = @drd.transitions['self'].invoke { |r| r.parameters = can_do_hash }.to_hash[:attributes]
+        expect(error_attributes).to_not eq(self_attributes)
       end
     end
   end
