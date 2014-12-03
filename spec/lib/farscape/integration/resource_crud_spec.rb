@@ -29,8 +29,6 @@ describe Farscape::Representor do
       let(:name) { 'Brave New DRD' }
       let(:params) { {name: name}.merge(can_do_hash) }
 
-      #TODO fix crichton test service, its printing out the entire collection of DRDs.  Also, add
-      # a schema load for blowing out the db to the test service.
       it 'can delete a drd' do
         # NB We compare attributes as the self link will differ between the two calls
         drd_attributes = @drd.to_hash[:attributes]
@@ -40,16 +38,14 @@ describe Farscape::Representor do
         error_attributes = @drd.transitions['self'].invoke { |r| r.parameters = can_do_hash }.to_hash[:attributes]
         expect(error_attributes).to_not eq(self_attributes)
       end
+      
+      xit 'can update a drd' do
+      end
+      
+      xit 'can toggle a drds activation state' do
+      end 
+      
     end
   end
-
-  # start at the entry entry_point
-  # get the drds (list) resource
-  # create a resource
-  # get that resource
-  # determine transitions from that resource (can_do_anything)
-  # it can toggle activation
-  # it can update
-  # it can delete
 
 end

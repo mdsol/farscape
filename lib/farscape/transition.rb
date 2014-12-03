@@ -4,7 +4,7 @@ require 'ostruct'
 module Farscape
   class Transition < Representors::Transition
 
-    EMPTY_BODIES = { hale: "{}" }
+    EMPTY_BODIES = { hale: "{}" } #TODO: Fix Representor to allow nil resources
 
     def initialize(transition_hash, agent)
       @agent = agent
