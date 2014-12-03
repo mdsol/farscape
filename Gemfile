@@ -7,10 +7,13 @@ gem 'rake',          '~> 0.9'
 gem 'awesome_print', '~> 1.1.0'
 gem 'redcarpet'
 
-gem 'representors', git: 'https://www.github.com/mdsol/crichton-representors.git', tag: 'v0.0.1.pre'
+gem 'representors', git: 'https://www.github.com/mdsol-share/representors.git', branch: '0-0-stable'
 
 group :development, :test do
   gem 'pry'
+  #TODO replace both crichton and crichton_test_service with references to stable branches when ready.
+  gem 'crichton_test_service', git: 'git@github.com:csavage-mdsol/crichton_test_service.git', branch: 'develop'
+  gem 'crichton', git: 'git@github.com:mdsol/crichton.git', branch: 'develop'
 end
 
 group :test do
