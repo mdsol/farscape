@@ -18,6 +18,7 @@ describe Farscape::Representor do
       drds_resource = drds_link.invoke { |req| req.parameters = can_do_hash }
       drd = drds_resource.transitions['create'].invoke { |req| req.parameters = {name: name} }
       expect(drd.transitions['self'].invoke.attributes['name']).to eq(name)
+      drd.transitions['delete'].invoke # Cleanup, failure here should imply failure in 'can delete a drd'
     end
 
     context 'an existing drd' do
