@@ -16,10 +16,10 @@ describe Farscape::Representor do
     it 'can create a drd' do
       name = 'Angry Max'
       drds_resource = drds_link.invoke { |req| req.parameters = can_do_hash }
-      drd = drds_resource.transitions['create'].invoke { |req| 
-                                                        req.attributes = {name: name}
-                                                        req.parameters =  can_do_hash 
-                                                       }
+      drd = drds_resource.transitions['create'].invoke do |req| 
+        req.attributes = {name: name}
+        req.parameters =  can_do_hash 
+      end
       expect(drd.transitions['self'].invoke.attributes['name']).to eq(name)
       drd.transitions['delete'].invoke # Cleanup, failure here should imply failure in 'can delete a drd'
     end
@@ -27,10 +27,10 @@ describe Farscape::Representor do
     context 'an existing drd' do
       before do
         drds_resource = drds_link.invoke { |req| req.parameters = can_do_hash }
-        @drd = drds_resource.transitions['create'].invoke { |req| 
-                                                          req.attributes = params
-                                                          req.parameters =  can_do_hash 
-                                                          }
+        @drd = drds_resource.transitions['create'].invoke do |req| 
+          req.attributes = params
+          req.parameters =  can_do_hash 
+        end
       end
 
       let(:name) { 'Brave New DRD' }
@@ -48,9 +48,10 @@ describe Farscape::Representor do
       
       it 'can update a drd' do
         new_kind = "sentinel"
-        @drd.transitions['update'].invoke { |r| 
-                                          r.attributes = {kind: new_kind}
-                                          r.parameters = can_do_hash }
+        @drd.transitions['update'].invoke do |r| 
+          r.attributes = {kind: new_kind}
+          r.parameters = can_do_hash
+        end
         kindof = @drd.transitions['self'].invoke.attributes['kind']
         expect(kindof).to eq(new_kind)
       end
