@@ -51,4 +51,4 @@ Farscape.cache = Peacekeeper::DalliCache.new(config)
 
 # Creating a Client
 
-Farscape can have one client for each protocol. Currently the only protocol type we have clients for is HTTP. The default client is [Net::HTTP](http://ruby-doc.org/stdlib-2.1.5/libdoc/net/http/rdoc/Net/HTTP.html). You can replace this client with `Faraday.clients[:http] = MyClient` or define one for a new protocol with `Faraday.clients[:amqp] = Jessica::Rabbit`. When a Farscape agent follows a link with a given protocol, it will use the client for that protocol if one has been provided. Required interface tk.
+By default, Farscape uses the [Net::HTTP](http://ruby-doc.org/stdlib-2.1.5/libdoc/net/http/rdoc/Net/HTTP.html) library to make HTTP requests. You can replace this client with `Faraday.clients[:http] = MyClient` or define one for a new protocol with `Faraday.clients[:amqp] = Jessica::Rabbit`. When a Farscape agent follows a link with a given protocol, it will use the client for that protocol if one has been provided. Required interface tk.
