@@ -16,7 +16,10 @@ describe Farscape::Representor do
     it 'can create a drd' do
       name = 'Angry Max'
       drds_resource = drds_link.invoke { |req| req.parameters = can_do_hash }
-      drd = drds_resource.transitions['create'].invoke { |req| req.parameters = {name: name} }
+      drd = drds_resource.transitions['create'].invoke { |req| 
+                                                        req.attributes = {name: name}
+                                                        req.parameters =  can_do_hash 
+                                                       }
       expect(drd.transitions['self'].invoke.attributes['name']).to eq(name)
       drd.transitions['delete'].invoke # Cleanup, failure here should imply failure in 'can delete a drd'
     end
@@ -24,7 +27,10 @@ describe Farscape::Representor do
     context 'an existing drd' do
       before do
         drds_resource = drds_link.invoke { |req| req.parameters = can_do_hash }
-        @drd = drds_resource.transitions['create'].invoke { |req| req.parameters = params }
+        @drd = drds_resource.transitions['create'].invoke { |req| 
+                                                          req.attributes = params
+                                                          req.parameters =  can_do_hash 
+                                                          }
       end
 
       let(:name) { 'Brave New DRD' }
@@ -40,10 +46,21 @@ describe Farscape::Representor do
         expect(error_attributes).to_not eq(self_attributes)
       end
       
-      xit 'can update a drd' do
+      it 'can update a drd' do
+        new_kind = "sentinel"
+        @drd.transitions['update'].invoke { |r| 
+                                          r.attributes = {kind: new_kind}
+                                          r.parameters = can_do_hash }
+        kindof = @drd.transitions['self'].invoke.attributes['kind']
+        expect(kindof).to eq(new_kind)
       end
       
-      xit 'can toggle a drds activation state' do
+      it 'can toggle a drds activation state' do
+        status = @drd.attributes['status']
+        action = status == 'activated' ? 'deactivate' : 'activate'
+        @drd.transitions[action].invoke { |r| r.parameters = can_do_hash }
+        new_status = @drd.transitions['self'].invoke { |r| r.parameters = can_do_hash }.attributes['status']
+        expect(status).to_not eq(new_status)
       end 
       
     end
