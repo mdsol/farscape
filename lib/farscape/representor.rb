@@ -6,7 +6,7 @@ module Farscape
     attr_reader :agent
     attr_reader :representor
 
-    # TODO: This is convoluted, we should probably just Monkeypatch things.
+    # TODO: Work with Representor to make this straight forwqrd.
     def initialize(requested_media_type, response_body, agent)
       @agent = agent
       if requested_media_type

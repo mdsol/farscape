@@ -26,6 +26,7 @@ module Farscape
       Representor.new(@agent.media_type, response.body || EMPTY_BODIES[@agent.media_type], @agent)
     end
     
+    # TODO: Remove Constants from Representor Classes
     def method_missing(meth, *args, &block)
       @transition.send(meth, *args, &block)
     end
