@@ -2,13 +2,13 @@ require 'representors'
 require 'ostruct'
 
 module Farscape
-  class Transition < Representors::Transition
+  class Transition
 
     EMPTY_BODIES = { hale: "{}" } #TODO: Fix Representor to allow nil resources
 
-    def initialize(transition_hash, agent)
+    def initialize(transition, agent)
       @agent = agent
-      super(transition_hash)
+      @transition = transition
     end
 
     def invoke
@@ -24,6 +24,10 @@ module Farscape
 
       response = @agent.client.invoke(call_options)
       Representor.new(@agent.media_type, response.body || EMPTY_BODIES[@agent.media_type], @agent)
+    end
+    
+    def method_missing(meth, *args, &block)
+      @transition.send(meth, *args, &block)
     end
   end
 end

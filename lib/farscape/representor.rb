@@ -6,9 +6,14 @@ module Farscape
     attr_reader :agent
     attr_reader :representor
 
+    # TODO: This is convoluted, we should probably just Monkeypatch things.
     def initialize(requested_media_type, response_body, agent)
       @agent = agent
-      @representor = Representors::DeserializerFactory.build(requested_media_type, response_body).to_representor
+      if requested_media_type
+        @representor = Representors::DeserializerFactory.build(requested_media_type, response_body).to_representor
+      else
+        @representor = response_body
+      end
     end
 
     def attributes
@@ -16,7 +21,13 @@ module Farscape
     end
 
     def transitions
-      Hash[representor.transitions.map{ |trans| [trans.rel, Farscape::Transition.new(trans.to_hash, agent)]}]
+      Hash[representor.transitions.map{ |trans| [trans.rel, Farscape::Transition.new(trans, agent)]}]
+    end
+    
+    def embedded
+      Hash[representor.embedded.map do |k, reps| 
+           [k, reps.map { |rep| Representor.new(false, rep, agent) }]
+      end]
     end
 
     def to_hash
