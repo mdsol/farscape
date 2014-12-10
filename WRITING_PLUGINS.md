@@ -10,7 +10,7 @@ To register your plugin, run
 Farscape.register_plugin(name: :cachinator, type: :cache, ...)
 ```
 
-Feel free to put this code at the bottom of `cachinator.rb` so that it turns on automatically after the gem is loaded. Consumers who want control can include a line in their initializer reading `Farscape.disable('cachinator')` or `Farscape.disable(:cache)`. If you'd rather have your plugin be off by default, you could instead wrap the register_plugin call in, say, a `Cachinator.activate` method for the consumer to call as desired. If your plugin is http-specific (say it adds Authentication headers), include `protocol: :http`.
+Feel free to put this code at the bottom of `cachinator.rb` so that it turns on automatically after the gem is loaded. Consumers who want control can include a line in their initializer reading `Farscape.disable(:cachinator)` or `Farscape.disable(:cache)`. If you'd rather have your plugin be off by default, you could instead wrap the register_plugin call in, say, a `Cachinator.activate` method for the consumer to call as desired. If your plugin is http-specific (say it adds Authentication headers), include `protocol: :http`.
 
 # Adding Middleware
 
@@ -21,6 +21,17 @@ To add your middleware to the stack, run
 ```ruby
 Farscape.register_plugin(name: :cachinator, type: :cache, middleware: [Cachinator::Middleware], ...)
 ```
+
+If you need to partially order your middleware, the elements of the middleware array can be hashes of the form:
+
+```ruby
+{ class: Cachinator::Middleware,
+  before: RequestSigner,
+  after: ['HubSubscriber', 'Ouroborous', :authorization]
+}
+```
+
+In this example, Cachinator::Middleware will be inserted before the RequestSigner middleware if it is present, and after the latest of HubSubscriber, Ouroborous, or any middleware of type "authorization". Note that Middleware classes can and should be given as strings if your plugin is not providing them, so that Ruby won't throw a NameError if they are undefined. If the ordering constraints given are impossible to satisfy, Faraday will throw an error.
 
 # Extending Agent
 
