@@ -8,14 +8,12 @@ $LOAD_PATH.uniq!
 
 require 'rspec'
 require 'pry'
-require 'debugger'
 require 'bundler'
 require 'simplecov'
 require 'faraday' #TODO move require for faraday into crichton test service
 require 'crichton_test_service'
 
 SimpleCov.start
-Debugger.start
 Bundler.setup
 
 require 'farscape'
