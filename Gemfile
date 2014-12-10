@@ -13,7 +13,7 @@ group :development, :test do
   gem 'pry'
   #TODO replace both crichton and crichton_test_service with references to stable branches when ready.
   gem 'crichton_test_service', git: 'https://www.github.com/mdsol/moya.git', branch: 'develop'
-  gem 'crichton', git: 'https://www.github.com/mdsol/crichton.git', branch: 'develop'
+  gem 'crichton', git: 'https://www.github.com/mdsol/crichton.git', branch: 'develop' 
 end
 
 group :test do
