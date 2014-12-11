@@ -38,7 +38,7 @@ describe Farscape do
 
   context 'configuring plugins' do
 
-    before(:each) { Farscape.clear }
+    after(:each) { Farscape.clear }
 
     it 'can register a plugin' do
       plugin = {name: :Peacekeeper, type: :sebacean}
