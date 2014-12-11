@@ -33,6 +33,16 @@ If you need to partially order your middleware, the elements of the middleware a
 
 In this example, Cachinator::Middleware will be inserted before the RequestSigner middleware if it is present, and after the latest of HubSubscriber, Ouroborous, or any middleware of type "authorization". Note that Middleware classes can and should be given as strings if your plugin is not providing them, so that Ruby won't throw a NameError if they are undefined. If the ordering constraints given are impossible to satisfy, Faraday will throw an error.
 
+You can also add config to your middleware when passing it in hash form:
+
+```ruby
+{ class: Cachinator::Middleware,
+  config: MyApp.config[:cache]
+}
+```
+
+The config hash will be passed to your middleware as a second argument to `new`, as in Faraday.
+
 # Extending Agent
 
 If you want to provide a more interactive API, or reference the deserialized response using the Representor interface, you can define a module that will be available to mix in to Farscape::Agent.

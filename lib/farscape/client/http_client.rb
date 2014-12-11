@@ -10,7 +10,13 @@ module Farscape
 
       def initialize
         @connection = Faraday.new do |builder|
-          Farscape.middleware_stack.each { |middleware| builder.use(middleware[:class]) }
+          Farscape.middleware_stack.each do |middleware|
+            if middleware.key?(:config)
+              builder.use(middleware[:class], middleware[:config])
+            else
+              builder.use(middleware[:class])
+            end
+          end
           builder.adapter Faraday.default_adapter
         end
       end

@@ -2,12 +2,15 @@ require 'spec_helper'
 
 module TestMiddleware
   class NoGetNoProblem
-    def initialize(app, *)
+    def initialize(app, config = {})
       @app = app
+      @config = config
     end
     def call(env)
       @app.call(env).on_complete do |env|
-        raise StandardError, "Shazam!" if env[:method] == :get
+        unless @config[:permissive]
+          raise StandardError, "Shazam!" if env[:method] == :get
+        end
       end
     end
   end
@@ -88,6 +91,13 @@ describe Farscape do
         Farscape.register_plugin(plugin)
         expect{Farscape::Agent.new("http://localhost:#{RAILS_PORT}").enter}.to raise_error('Shazam!')
       end
+
+      it 'can configure middleware' do
+        plugin = {name: :Peacekeeper, type: :sebacean, middleware: [{class: TestMiddleware::NoGetNoProblem, config: {permissive: true}}]}
+        Farscape.register_plugin(plugin)
+        expect{Farscape::Agent.new("http://localhost:#{RAILS_PORT}").enter}.not_to raise_error('Shazam!')
+      end
+
 
       [:sebacean, TestMiddleware::SabotageDetector,'TestMiddleware::SabotageDetector',['TestMiddleware::SabotageDetector']].each do |form|
         it "honors the before: option in middleware when given as #{form.inspect}" do

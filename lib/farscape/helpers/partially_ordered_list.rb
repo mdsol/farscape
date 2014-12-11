@@ -6,9 +6,9 @@ class PartiallyOrderedList
   include Enumerable
 
   class Element < Struct.new(:item, :preceders)
-    def to_s
+    def inspect
       if preceders.any?
-        "#{item} > #{preceders.map(&:item).join(', ')}"
+        "#{item} > {#{preceders.map(&:item).join(', ')}}"
       else
         item
       end
