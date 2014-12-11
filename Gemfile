@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 gemspec
 
-gem 'byebug', '~> 3.5.1'
+gem 'byebug', '~> 3.5.1' if RUBY_VERSION > '2'
 gem 'yard',          '~> 0.8.5'
 gem 'rake',          '~> 0.9'
 gem 'awesome_print', '~> 1.1.0'
@@ -13,7 +13,7 @@ group :development, :test do
   gem 'pry'
   #TODO replace both crichton and crichton_test_service with references to stable branches when ready.
   gem 'crichton_test_service', git: 'https://www.github.com/mdsol/moya.git', branch: 'develop'
-  gem 'crichton', git: 'https://www.github.com/mdsol-share/crichton.git', branch: 'develop' 
+  gem 'crichton', git: 'https://www.github.com/mdsol-share/crichton.git', branch: 'develop'
 end
 
 group :test do
