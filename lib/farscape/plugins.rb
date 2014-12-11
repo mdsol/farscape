@@ -31,6 +31,12 @@ module Farscape
       plugins_to_disable.each { |plugin| disable_plugin(plugin) }
     end
 
+    def clear
+      plugins.each { |pi| disable_plugin(pi) }
+      @plugins = []
+      @disabled_plugins = []
+    end
+
     private
 
     def disable_plugin(plugin)
@@ -39,25 +45,22 @@ module Farscape
 
     def add_middleware(options)
       [*options[:middleware]].each do |middleware|
-        if middleware.is_a?(Hash)
-          middleware[:type] = options[:type]
-          middleware[:plugin] = options[:name]
-        else
-          middleware = {class: middleware, type: options[:type], plugin: options[:plugin]}
-        end
+        middleware = {class: middleware} unless middleware.is_a?(Hash)
+        middleware[:type] = options[:type]
+        middleware[:plugin] = options[:name]
         @middleware_stack.add(middleware)
       end
     end
 
     def order_middleware(mw_1, mw_2)
       case
-      when includes_middleware(mw_1[:before],mw_2)
+      when includes_middleware?(mw_1[:before],mw_2)
         -1
-      when includes_middleware(mw_1[:after],mw_2)
+      when includes_middleware?(mw_1[:after],mw_2)
         1
-      when includes_middleware(mw_2[:before],mw_1)
+      when includes_middleware?(mw_2[:before],mw_1)
         1
-      when includes_middleware(mw_2[:after],mw_1)
+      when includes_middleware?(mw_2[:after],mw_1)
         -1
       end
     end
