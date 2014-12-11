@@ -11,6 +11,7 @@ module Farscape
       def initialize
         @connection = Faraday.new do |builder|
           Farscape.middleware_stack.each { |middleware| builder.use(middleware) }
+          builder.adapter Faraday.default_adapter
         end
       end
 
