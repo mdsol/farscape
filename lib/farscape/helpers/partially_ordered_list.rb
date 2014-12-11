@@ -55,12 +55,13 @@ class PartiallyOrderedList
       @cached_ary.each{ |elt| yield elt.item }
     else
       @cached_ary = []
-      unadded = elements.dup
+      unadded = elements.map(&:dup)
       while unadded.any?
-        i = unadded.find_index { |candidate| (candidate.preceders - @cached_ary).none? }
+        i = unadded.find_index { |candidate| candidate.preceders.none? }
         if i
           to_add = unadded.delete_at(i)
           yield(to_add.item)
+          unadded.each { |elt| elt.preceders.delete(to_add) }
           @cached_ary << to_add
         else
           raise CircularOrderingError.new("Could not resolve ordering for #{unadded.map(&:item)}")

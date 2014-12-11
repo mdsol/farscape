@@ -46,7 +46,6 @@ describe(PartiallyOrderedList) do
     expect(list.find_index(8)).to be < list.find_index(1)
   end
 
-  # This can take maybe 2 seconds
   it 'finds the only possible transitive ordering' do
     list = described_class.new do |a,b|
       if a % 2 == b % 2
