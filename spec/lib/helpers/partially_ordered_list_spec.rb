@@ -106,4 +106,20 @@ describe(PartiallyOrderedList) do
     expect{described_class.new}.to raise_error(ArgumentError)
   end
 
+  it 're-sorts as needed' do
+    list = described_class.new do |a,b|
+      if a % 2 == b % 2
+        a <=> b
+      elsif [a,b] == [1,20]
+        1
+      elsif [a,b] == [20,1]
+        -1
+      end
+    end
+    [*1..19].shuffle.each { |i| list.add(i) }
+    list.to_a
+    list.add(20)
+    expect(list.to_a).to eq([2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 1, 3, 5, 7, 9, 11, 13, 15, 17, 19])
+  end
+
 end

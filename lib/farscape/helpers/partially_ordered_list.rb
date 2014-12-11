@@ -13,6 +13,9 @@ class PartiallyOrderedList
         item
       end
     end
+    def ==(other)
+      item == other.item
+    end
   end
 
   class CircularOrderingError < StandardError
@@ -55,7 +58,7 @@ class PartiallyOrderedList
       @cached_ary.each{ |elt| yield elt.item }
     else
       @cached_ary = []
-      unadded = elements.map(&:dup)
+      unadded = elements.map{ |elt| elt=elt.dup; elt.preceders = elt.preceders.dup; elt }
       while unadded.any?
         i = unadded.find_index { |candidate| candidate.preceders.none? }
         if i
