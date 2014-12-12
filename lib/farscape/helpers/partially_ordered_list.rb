@@ -18,8 +18,7 @@ class PartiallyOrderedList
     end
   end
 
-  class CircularOrderingError < StandardError
-  end
+  CircularOrderingError = Class.new(StandardError)
 
   attr_accessor :elements, :ordering
 
@@ -31,16 +30,16 @@ class PartiallyOrderedList
 
   def add(item)
     @cached_ary = nil
-    new = Element.new(item, [])
-    elements.each do |old|
-      case ordering.call(old.item, new.item)
+    new_el = Element.new(item, [])
+    elements.each do |old_el|
+      case ordering.call(old_el.item, new_el.item)
       when -1
-        new.preceders << old
+        new_el.preceders << old_el
       when 1
-        old.preceders  << new
+        old_el.preceders << new_el
       end
     end
-    elements << new
+    elements << new_el
   end
 
   def delete(item)
