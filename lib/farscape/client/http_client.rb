@@ -1,4 +1,5 @@
 require 'farscape/client/base_client'
+require 'farscape/plugins'
 
 module Farscape
   class Agent
@@ -8,7 +9,16 @@ module Farscape
       attr_reader :connection
 
       def initialize
-        @connection = Faraday.new
+        @connection = Faraday.new do |builder|
+          Farscape.middleware_stack.each do |middleware|
+            if middleware.key?(:config)
+              builder.use(middleware[:class], middleware[:config])
+            else
+              builder.use(middleware[:class])
+            end
+          end
+          builder.adapter Faraday.default_adapter
+        end
       end
 
       ##
