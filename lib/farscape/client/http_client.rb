@@ -17,6 +17,7 @@ module Farscape
               builder.use(middleware[:class])
             end
           end
+          builder.request :url_encoded
           builder.adapter Faraday.default_adapter
         end
       end

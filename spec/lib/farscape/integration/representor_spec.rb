@@ -30,7 +30,7 @@ describe Farscape::Representor do
   describe '#attributes' do
     it 'has readable attributes' do
       representor = Farscape::Agent.new(entry_point).enter
-      expect(representor.transitions["drds"].invoke.attributes).to eq({"total_count"=>5})
+      expect(representor.transitions["drds"].invoke.attributes["total_count"]).to be > 4
     end
   end
 end

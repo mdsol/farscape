@@ -22,6 +22,7 @@ Gem::Specification.new do |s|
   s.add_dependency('addressable',   '~> 2.3.0')
   s.add_dependency('faraday',       '~> 0.8.8')
   s.add_dependency('activesupport', '>= 0')
+
   s.add_development_dependency 'rspec'
 
 end
