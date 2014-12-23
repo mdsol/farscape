@@ -5,11 +5,11 @@ describe Farscape::Agent do
 
   describe '#enter' do
     it 'returns a Farscape::Representor' do
-      expect(Farscape::Agent.new(entry_point).enter).to be_a Farscape::Representor
+      expect(Farscape::Agent.new(entry_point).enter).to be_a Farscape::RepresentorAgent
     end
 
     it 'can be provided an entry point after initialization' do
-      expect(Farscape::Agent.new.enter(entry_point)).to be_a Farscape::Representor
+      expect(Farscape::Agent.new.enter(entry_point)).to be_a Farscape::RepresentorAgent
     end
 
     #TODO decide on the appropriate error

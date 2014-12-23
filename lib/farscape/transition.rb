@@ -2,7 +2,7 @@ require 'representors'
 require 'ostruct'
 
 module Farscape
-  class Transition
+  class TransitionAgent
 
     EMPTY_BODIES = { hale: "{}" } #TODO: Fix Representor to allow nil resources
 
@@ -23,9 +23,9 @@ module Farscape
       call_options[:body] = options.attributes if options.attributes
 
       response = @agent.client.invoke(call_options)
-      Representor.new(@agent.media_type, response.body || EMPTY_BODIES[@agent.media_type], @agent)
+      @agent.representor.new(@agent.media_type, response.body || EMPTY_BODIES[@agent.media_type], @agent)
     end
-    
+
     # TODO: Remove Constants from Representor Classes
     def method_missing(meth, *args, &block)
       @transition.send(meth, *args, &block)
