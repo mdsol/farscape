@@ -12,7 +12,12 @@ module Farscape
         @connection = Faraday.new do |builder|
           Farscape.middleware_stack.each do |middleware|
             if middleware.key?(:config)
-              builder.use(middleware[:class], middleware[:config])
+              config = middleware[:config]
+              if config.is_a?(Array)
+                builder.use(middleware[:class], *config)
+              else
+                builder.use(middleware[:class], config)
+              end
             else
               builder.use(middleware[:class])
             end
