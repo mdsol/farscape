@@ -1,4 +1,5 @@
 require 'farscape/client/base_client'
+require 'faraday'
 
 module Farscape
   class Agent
