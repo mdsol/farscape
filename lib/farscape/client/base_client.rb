@@ -3,7 +3,7 @@ module Farscape
     # Client independent of protocol, only used for HTTP for now
     class BaseClient
 
-      def methods
+      def interface_methods
         {
           safe: [],
           unsafe: [],
@@ -11,16 +11,16 @@ module Farscape
         }
       end
 
-      def safe_methods
-        methods[:safe]
+      def safe_method?(meth)
+        interface_methods[:safe].include?(meth)
       end
 
-      def unsafe_methods
-        methods[:unsafe]
+      def unsafe_method?(meth)
+        interface_methods[:unsafe].include?(meth)
       end
 
-      def idempotent_methods
-        methods[:idempotent]
+      def idempotent_method?(meth)
+        interface_methods[:idempotent].include?(meth)
       end
     end
   end

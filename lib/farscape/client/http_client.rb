@@ -34,10 +34,10 @@ module Farscape
         end
       end
 
-      def methods
+      def interface_methods
         {
-          unsafe: ['PUT', 'DELETE'],
-          idempotent: ['POST', 'PATCH'], # http://tools.ietf.org/html/rfc5789
+          idempotent: ['PUT', 'DELETE'],
+          unsafe: ['POST', 'PATCH'], # http://tools.ietf.org/html/rfc5789
           safe: ['GET', 'HEAD', 'OPTIONS', 'TRACE', 'CONNECT']
         }
       end

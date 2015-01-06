@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'json'
 
-describe Farscape::RepresentorAgent do
+describe Farscape::SafeRepresentorAgent do
 
   # TODO: Make Representor::Field behave like a string
 
@@ -80,14 +80,16 @@ describe Farscape::RepresentorAgent do
         it "requires an ! on unsafe transitions" do
           agent = Farscape::Agent.new
           resources = agent.enter(entry_point)
-          expect { resources.drds(can_do_hash).create }.to raise_error(NoMethodError) # TODO: Create Exact Error Interface for Farscape
-          expect(resources.drds(can_do_hash).create!.transitions.keys).to include('self')
+          expect { resources.drds { |req| req.parameters = can_do_hash }.create }.to raise_error(NoMethodError) # TODO: Create Exact Error Interface for Farscape
+          expect(resources.drds { |req| req.parameters = can_do_hash }.create!.transitions.keys).to include('self')
         end
+
         it "can be called with arguments" do
           agent = Farscape::Agent.new
           resources = agent.enter(entry_point)
-          expect(resources.drds(can_do_hash).transitions.keys).to include('create')
+          expect(resources.drds.search(status: 'active').items.all? { |h| puts h }).to be true
         end
+
         it "can take a block" do
           agent = Farscape::Agent.new
           resources = agent.enter(entry_point)

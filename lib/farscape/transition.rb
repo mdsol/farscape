@@ -11,9 +11,11 @@ module Farscape
       @transition = transition
     end
 
-    def invoke
+    def invoke(*args)
       options = OpenStruct.new
       yield options if block_given?
+
+      match_params(args)
 
       call_options = {}
       call_options[:url] = uri
@@ -26,9 +28,14 @@ module Farscape
       @agent.representor.new(@agent.media_type, response.body || EMPTY_BODIES[@agent.media_type], @agent)
     end
 
-    # TODO: Remove Constants from Representor Classes
     def method_missing(meth, *args, &block)
       @transition.send(meth, *args, &block)
+    end
+
+    def match_params(args)
+      print @transition
+      print "\np=", @transition.parameters
+      print "\na=", @transition.attributes
     end
   end
 end

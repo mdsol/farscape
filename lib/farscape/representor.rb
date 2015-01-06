@@ -30,6 +30,10 @@ module Farscape
       @representor.to_hash
     end
 
+    def method_missing(method, *args, &block)
+      super
+    end
+
     def safe
       reframe_representor(safe=true)
     end
@@ -53,28 +57,41 @@ module Farscape
 
   class RepresentorAgent < SafeRepresentorAgent
     def method_missing(method, *args, &block)
+      print method
       method = method.to_s
 
-      get_embedded(method) || get_transition(method, *args, &block) || get_attribute(method) || raise(NoMethodError)
+      get_embedded(method) || get_transition(method, *args, &block) || get_attribute(method) || super(method, *args, &block)
+    end
+
+    def respond_to_missing?(method_name, include_private = false)
+      [embedded.include?(method_name), method_transitions.include?(method), attributes.include?(method)].any? || super
     end
 
     private
 
-    def get_embedded(method)
-      embedded[method]
+    def get_embedded(meth)
+      print "\n==============================\n"
+      print embedded.keys, meth
+      print "\n==============================\n"
+      embedded[meth]
     end
 
-    def get_transition(method, *args, &block)
-      return false unless method_transitions.include?(method)
-      args.empty? ? method_transitions[method].invoke(&block) : method_transitions[method].invoke { |req| req.parameters = args.first }
+    def get_transition(meth, request_params = nil, &block)
+      print method_transitions.keys, meth
+      return false unless method_transitions.include?(meth)
+      if request_params
+        method_transitions[meth].invoke(request_params) { block }
+      else
+        block_given? ? method_transitions[meth].invoke { |req| req.parameters = request_params } : method_transitions[meth].invoke { block }
+      end
     end
 
-    def get_attribute(method)
-      attributes[method]
+    def get_attribute(meth)
+      attributes[meth]
     end
 
     def method_transitions
-      transitions.map { |k,v| @agent.client.safe_methods.include?( v.interface_method ) ? {k => v}  : {k+'!' => v} }.reduce(:merge)
+      transitions.map { |k,v| @agent.client.safe_method?( v.interface_method ) ? {k => v}  : {k+'!' => v} }.reduce(:merge)
     end
 
   end

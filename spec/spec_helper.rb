@@ -11,7 +11,7 @@ require 'pry'
 require 'bundler'
 require 'simplecov'
 require 'faraday' #TODO move require for faraday into crichton test service
-require 'crichton_test_service'
+require 'moya'
 
 SimpleCov.start
 Bundler.setup
@@ -35,13 +35,13 @@ RSpec.configure do |config|
 
   config.before(:suite) do
     old_handler = trap(:INT) {
-      Process.kill(:INT, $crichton_test_rails_pid) if $crichton_test_rails_pid
+      Process.kill(:INT, $moya_rails_pid) if $moya_rails_pid
       old_handler.call if old_handler.respond_to?(:call)
     }
-    $crichton_test_rails_pid = CrichtonTestService.spawn_rails_process!(RAILS_PORT)
+    $moya_rails_pid = Moya.spawn_rails_process!(RAILS_PORT)
   end
 
   config.after(:suite) do
-    Process.kill(:INT, $crichton_test_rails_pid)
+    Process.kill(:INT, $moya_rails_pid)
   end
 end
