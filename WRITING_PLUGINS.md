@@ -31,7 +31,7 @@ If you need to partially order your middleware, the elements of the middleware a
 }
 ```
 
-In this example, Cachinator::Middleware will be inserted before the RequestSigner middleware if it is present, and after the latest of HubSubscriber, Ouroborous, or any middleware of type "authorization". Note that Middleware classes can and should be given as strings if your plugin is not providing them, so that Ruby won't throw a NameError if they are undefined. If the ordering constraints given are impossible to satisfy, Faraday will throw an error.
+In this example, Cachinator::Middleware will be inserted before the RequestSigner middleware if it is present, and after the latest of HubSubscriber, Ouroborous, or any middleware of type "authorization". Note that Middleware classes can and should be given as strings if your plugin is not providing them, so that Ruby won't throw a NameError if they are undefined. If the ordering constraints given are impossible to satisfy, Farscape will throw an error.
 
 You can also add config to your middleware when passing it in hash form:
 
@@ -41,7 +41,7 @@ You can also add config to your middleware when passing it in hash form:
 }
 ```
 
-The config hash will be passed to your middleware as a second argument to `new`, as in Faraday.
+The config hash will be passed to your middleware as a second argument to `new`, as in Faraday. To pass multiple arguments, use `config: [arg1, arg2]`.
 
 # Extending Agent
 
@@ -59,7 +59,7 @@ agent.enter(url).using(:peacekeeper).pacify!
 
 # Farscape Utilities
 
-Any plugin can reference `Farscape.cache`, which exposes [the same API as Rails.cache](http://apidock.com/rails/ActiveSupport/Cache/Store), `Farscape.logger`, which exposes [the same API as the built-in Ruby logger](http://apidock.com/ruby/Logger), and `Farscape.jobs`, which enables asynchronous processing (API tk). By default, Farscape.cache operates in-memory, Farscape.logger writes to STDOUT, and Farscape.jobs will actually block and run synchronously. Plugins can provide enhanced versions of these utilities by modifying the global state of the Farscape object:
+Any plugin can reference `Farscape.cache`, which exposes [the same API as Rails.cache](http://apidock.com/rails/ActiveSupport/Cache/Store), `Farscape.logger`, which exposes [the same API as the built-in Ruby logger](http://apidock.com/ruby/Logger). By default, Farscape.cache operates in-memory and Farscape.logger writes to STDOUT. Plugins can provide enhanced versions of these utilities by modifying the global state of the Farscape object:
 
 ```ruby
 module Peacekeeper
@@ -69,6 +69,8 @@ module Peacekeeper
 end
 Farscape.cache = Peacekeeper::DalliCache.new(config)
 ```
+
+Future updates will provide Farscape.jobs, a backgrounding utility along similar lines.
 
 # Creating a Client
 
