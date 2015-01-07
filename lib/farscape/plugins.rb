@@ -25,12 +25,14 @@ module Farscape
       (disabled_plugins & [options[:name],options[:type]]).first
     end
 
+    # Prevents a plugin [type] from being registered, and unregisters it if it's already there
     def disable(name_or_type)
       disabled_plugins << name_or_type
       plugins_to_disable, @plugins = @plugins.partition { |plugin| [plugin[:name], plugin[:type]].include?(name_or_type) }
       plugins_to_disable.each { |plugin| disable_plugin(plugin) }
     end
 
+    # Removes all plugins and disablings of plugins
     def clear
       plugins.each { |pi| disable_plugin(pi) }
       @plugins = []
@@ -39,10 +41,13 @@ module Farscape
 
     private
 
+    # Handles the state cleanup when an existing plugin is removed.
+    # Currently all this has to do is delete middleware but that'll change soon.
     def disable_plugin(plugin)
       @middleware_stack.select{ |m| m[:plugin] == plugin[:name] }.each { |m| @middleware_stack.delete(m) }
     end
 
+    # Adds a hash representing each middleware class and where it came from to the middleware stack
     def add_middleware(options)
       [*options[:middleware]].each do |middleware|
         middleware = {class: middleware} unless middleware.is_a?(Hash)
@@ -52,6 +57,7 @@ module Farscape
       end
     end
 
+    # Used by PartiallyOrderedList to implement the before: and after: options
     def order_middleware(mw_1, mw_2)
       case
       when includes_middleware?(mw_1[:before],mw_2)
@@ -65,6 +71,7 @@ module Farscape
       end
     end
 
+    # Search a list for a given middleware by either its class or the type of its originating plugin
     def includes_middleware?(list, middleware)
       list = [*list]
       list.map(&:to_s).include?(middleware[:class].to_s) || list.include?(middleware[:type])
