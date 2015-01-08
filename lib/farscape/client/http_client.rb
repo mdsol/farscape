@@ -1,3 +1,4 @@
+require 'faraday'
 require 'farscape/client/base_client'
 require 'farscape/plugins'
 
