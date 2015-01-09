@@ -35,18 +35,16 @@ module Farscape
     private
 
     def match_params(args, options)
-      hash_filter = ->(hash,list) { hash.select { |k,_| list.include?(k) } }
-      field_names = ->(field_list) { field_list.map { |field| field.name.to_sym } }
-            [:parameters, :attributes].each do |key_type|
-              filtered_values = hash_filter.call(args, field_names.call(@transition.public_send(key_type)))
-              options.public_send(:"#{key_type}=", filtered_values.merge(options.public_send(key_type) || {}))
-            end
-      # params = hash_filter.call(args, field_names.call(@transition.parameters))
-      # attrs = hash_filter.call(args, field_names.call(@transition.attributes))
-      # options.parameters = params.merge(options.parameters || {})
-      # options.attributes = attrs.merge(options.attributes || {})
-
+      [:parameters, :attributes].each do |key_type|
+        field_list = @transition.public_send(key_type)
+        field_names =field_list.map { |field| field.name.to_sym }
+        filtered_values = args.select { |k,_| field_names.include?(k) }
+        values = filtered_values.merge(options.public_send(key_type) || {})
+        options.public_send(:"#{key_type}=", values)
+      end
       options
     end
+
+
   end
 end
