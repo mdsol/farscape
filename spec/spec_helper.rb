@@ -10,7 +10,6 @@ require 'rspec'
 require 'pry'
 require 'bundler'
 require 'simplecov'
-require 'faraday' #TODO move require for faraday into crichton test service
 require 'moya'
 
 SimpleCov.start
