@@ -81,19 +81,25 @@ describe Farscape::SafeRepresentorAgent do
           agent = Farscape::Agent.new
           resources = agent.enter(entry_point)
           expect { resources.drds { |req| req.parameters = can_do_hash }.create }.to raise_error(NoMethodError) # TODO: Create Exact Error Interface for Farscape
-          expect(resources.drds { |req| req.parameters = can_do_hash }.create!.transitions.keys).to include('self')
+
+          drones = resources.drds { |req| req.parameters = can_do_hash }
+          expect(drones.create!.transitions.keys).to include('help')
         end
 
         it "can be called with arguments" do
           agent = Farscape::Agent.new
           resources = agent.enter(entry_point)
-          expect(resources.drds.search(status: 'active').items.all? { |h| puts h }).to be true
+          expect(resources.drds.search(status: 'active').items.all? { |h| h.status }).to be true
         end
 
         it "can take a block" do
           agent = Farscape::Agent.new
           resources = agent.enter(entry_point)
-          expect(resources.drds { |req| req.parameters = can_do_hash }.transitions.keys).to include('create')
+          resources.drds { |req| req.parameters = can_do_hash }
+          resources.drds.search { |req| req.parameters = can_do_hash }
+
+          expect(resources.drds.search(status: 'activated') { |req| req.parameters = can_do_hash }.transitions.keys).to include('create')
+          expect(resources.drds.search(status: 'activated') { |req| req.parameters = can_do_hash }.items.all? { |h| h.status == 'activated' }).to be true
         end
       end
       context "When Referencing Attributes" do
@@ -114,8 +120,10 @@ describe Farscape::SafeRepresentorAgent do
         it "can be converted to a safe representor and back" do
           resource = agent.safe.enter.transitions['drds'].invoke { |req| req.parameters = can_do_hash }.embedded['items'].first
           expect {resource.status}.to raise_error(NoMethodError)
+
           resource = resource.unsafe
           expect(resource.status).to eq(drds.embedded['items'].first.attributes['status'])
+
           resource = resource.safe
           expect {resource.status}.to raise_error(NoMethodError)
         end
@@ -128,10 +136,10 @@ describe Farscape::SafeRepresentorAgent do
           search_transition = drds.transitions['search']
 
           # TODO: Diverges from Doc due to doc not considering Field objects
-          expect(search_transition.parameters.map { |p| p.name } ).to eq(['search_term','search_name'])
+          expect(search_transition.parameters.map { |p| p.name } ).to eq(['status'])
 
           filtered_drds = search_transition.invoke do |builder|
-            builder.parameters = { search_term: '1812' } # TODO: Make Moya search like a normal person
+            builder.parameters = { status: 'activated' }
           end
 
           expect(filtered_drds.transitions['items']).to_not be(nil)
@@ -143,7 +151,7 @@ describe Farscape::SafeRepresentorAgent do
           embedded_drd_items = drds.embedded # TODO: Orig "drds.items" Looks like New Interface
           drd = embedded_drd_items['items'].first
 
-          expect(drd.attributes.keys).to eq(['uuid','name','status','kind','leviathan_uuid','built_at'])
+          expect(drd.attributes.keys).to eq(["id", "name", "status", "old_status", "kind", "size", "leviathan_uuid", "created_at", "location", "location_detail", "destroyed_status"])
           expect(drd.transitions.keys).to include("self", "update", "delete", "leviathan", "profile", "type", "help")
 
           status = drd.attributes['status']
@@ -158,9 +166,6 @@ describe Farscape::SafeRepresentorAgent do
           expect(deactivated_drd.attributes['status']).to_not eq(status)
           expect(deactivated_drd.attributes.keys).to eq(drd.attributes.keys)
           expect(deactivated_drd.transitions.keys).to_not eq(drd.transitions.keys)
-
-          # TODO: Make Moya error out when deactivating twice, change to something more straightforward
-          # deactivate_transition.invoke # => raise Farscape::Agent::Gone error
         end
       end
 

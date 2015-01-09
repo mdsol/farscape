@@ -10,7 +10,7 @@ module Farscape
     # The conditional is to allow direct creation of a RepresentorAgent from a Representor
     def initialize(requested_media_type, response_body, agent)
       @agent = agent
-      @representor = requested_media_type ? deserialize(requested_media_type, response_body) : response_body
+      @representor = deserialize(requested_media_type, response_body)
     end
 
     def attributes
@@ -30,10 +30,6 @@ module Farscape
       @representor.to_hash
     end
 
-    def method_missing(method, *args, &block)
-      super
-    end
-
     def safe
       reframe_representor(safe=true)
     end
@@ -50,6 +46,7 @@ module Farscape
     end
 
     def deserialize(requested_media_type, response_body)
+      return response_body unless requested_media_type
       Representors::DeserializerFactory.build(requested_media_type, response_body).to_representor
     end
 
@@ -57,37 +54,36 @@ module Farscape
 
   class RepresentorAgent < SafeRepresentorAgent
     def method_missing(method, *args, &block)
-      print method
-      method = method.to_s
-
-      get_embedded(method) || get_transition(method, *args, &block) || get_attribute(method) || super(method, *args, &block)
+      begin
+        super
+      rescue NoMethodError => e
+        parmeters = args.first || {}
+        get_embedded(method) || get_transition(method, parmeters, &block) || get_attribute(method) || raise
+      end
     end
 
     def respond_to_missing?(method_name, include_private = false)
-      [embedded.include?(method_name), method_transitions.include?(method), attributes.include?(method)].any? || super
+      super || [embedded.include?(method_name), method_transitions.include?(method), attributes.include?(method)].any?
+    end
+
+    # HACK! - Requires for method_missing; apparently a undocumented feature of Ruby
+    def to_ary
     end
 
     private
 
     def get_embedded(meth)
-      print "\n==============================\n"
-      print embedded.keys, meth
-      print "\n==============================\n"
-      embedded[meth]
-    end
-
-    def get_transition(meth, request_params = nil, &block)
-      print method_transitions.keys, meth
-      return false unless method_transitions.include?(meth)
-      if request_params
-        method_transitions[meth].invoke(request_params) { block }
-      else
-        block_given? ? method_transitions[meth].invoke { |req| req.parameters = request_params } : method_transitions[meth].invoke { block }
-      end
+      embedded[meth.to_s]
     end
 
     def get_attribute(meth)
-      attributes[meth]
+      attributes[meth.to_s]
+    end
+
+    def get_transition(meth, request_params = {}, &block)
+      return false unless method_transitions.include?(meth = meth.to_s)
+      block = ->(*args) { args } unless block_given?
+      method_transitions[meth].invoke(request_params) { |x| block.call(x) }
     end
 
     def method_transitions

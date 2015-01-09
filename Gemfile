@@ -12,7 +12,7 @@ gem 'representors', git: 'https://www.github.com/mdsol-share/representors.git', 
 group :development, :test do
   gem 'pry'
   #TODO replace both crichton and crichton_test_service with references to stable branches when ready.
-  gem 'moya', git: 'https://www.github.com/mdsol/moya.git', branch: 'fix/active_uuid'
+  gem 'moya', git: 'https://www.github.com/mdsol/moya.git', branch: 'develop'
   gem 'crichton', git: 'https://www.github.com/mdsol-share/crichton.git', branch: 'develop'
 end
 
