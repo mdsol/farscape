@@ -1,5 +1,5 @@
 require 'farscape/representor'
-require 'farscape/client/http_client'
+require 'farscape/clients'
 
 module Farscape
   class Agent
@@ -27,7 +27,7 @@ module Farscape
     end
 
     def client
-      { http: HTTPClient }[PROTOCOL].new
+      Farscape.clients[PROTOCOL].new
     end
   end
 end

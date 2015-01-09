@@ -24,8 +24,13 @@ module Farscape
             end
           end
           builder.request :url_encoded
-          builder.adapter Faraday.default_adapter
+          builder.adapter faraday_adapter
         end
+      end
+
+      # Override this in a subclass to create clients with custom Faraday adapters
+      def faraday_adapter
+        Faraday.default_adapter
       end
 
       ##
