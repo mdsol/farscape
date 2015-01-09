@@ -6,8 +6,6 @@ module Farscape
     attr_reader :agent
     attr_reader :representor
 
-    # TODO: Work with Representor to make this straight forwqrd.
-    # The conditional is to allow direct creation of a RepresentorAgent from a Representor
     def initialize(requested_media_type, response_body, agent)
       @agent = agent
       @representor = deserialize(requested_media_type, response_body)
@@ -23,7 +21,7 @@ module Farscape
     end
 
     def embedded
-      Hash[representor.embedded.map{ |k, reps| [k, reps.map { |rep| @agent.representor.new(false, rep, agent) }] }]
+      Hash[representor.embedded.map{ |k, reps| [k, _embedded(reps)] }]
     end
 
     def to_hash
@@ -50,16 +48,18 @@ module Farscape
       Representors::DeserializerFactory.build(requested_media_type, response_body).to_representor
     end
 
+    def _embedded(reprs)
+      reprs.map { |repr| @agent.representor.new(false, repr, @agent) }
+    end
+
   end
 
   class RepresentorAgent < SafeRepresentorAgent
     def method_missing(method, *args, &block)
-      begin
-        super
-      rescue NoMethodError => e
-        parmeters = args.first || {}
-        get_embedded(method) || get_transition(method, parmeters, &block) || get_attribute(method) || raise
-      end
+      super
+    rescue NoMethodError => e
+      parameters = args.first || {}
+      get_embedded(method) || get_transition(method, parameters, &block) || get_attribute(method) || raise
     end
 
     def respond_to_missing?(method_name, include_private = false)
