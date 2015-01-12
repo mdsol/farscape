@@ -55,6 +55,15 @@ module Farscape
           options[:headers].each { |k,v| req.headers[k] = v }
         end
       end
+
+      def interface_methods
+        {
+          idempotent: ['PUT', 'DELETE'],
+          unsafe: ['POST', 'PATCH'], # http://tools.ietf.org/html/rfc5789
+          safe: ['GET', 'HEAD', 'OPTIONS', 'TRACE', 'CONNECT']
+        }
+      end
+
     end
   end
 end

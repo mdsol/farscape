@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Farscape::Representor do
+describe Farscape::RepresentorAgent do
   let(:entry_point) { "http://localhost:#{RAILS_PORT}"}
 
   describe '#transitions' do
@@ -18,7 +18,7 @@ describe Farscape::Representor do
    describe "#invoke" do
       it 'returns a representor' do
         representor = Farscape::Agent.new(entry_point).enter
-         expect(representor.transitions["drds"].invoke).to be_a Farscape::Representor
+         expect(representor.transitions["drds"].invoke).to be_a Farscape::RepresentorAgent
       end
 
       it 'can reload a resource' do
