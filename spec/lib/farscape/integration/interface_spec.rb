@@ -61,6 +61,14 @@ describe Farscape::SafeRepresentorAgent do
       end
     end
 
+    describe "A Representor Agent" do
+      it "Allows retrieving Response Header Information" do
+        resources = agent.enter
+        drds = resources.drds
+        expect(drds.response.status).to eq(200)
+      end
+    end
+
     describe "Reload A Resource" do
       it "can reload a resource" do
         self_transition = drds.transitions['self']

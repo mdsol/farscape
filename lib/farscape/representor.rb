@@ -1,14 +1,19 @@
 require 'representors'
 require 'farscape/transition'
+require 'ostruct'
 
 module Farscape
   class SafeRepresentorAgent
     attr_reader :agent
     attr_reader :representor
+    attr_reader :response
 
-    def initialize(requested_media_type, response_body, agent)
+    EMPTY_BODIES = { hale: "{}" } #TODO: Fix Representor to allow nil resources
+
+    def initialize(requested_media_type, response, agent)
       @agent = agent
-      @representor = deserialize(requested_media_type, response_body)
+      @response = response
+      @representor = deserialize(requested_media_type, response.body)
     end
 
     def attributes
@@ -21,7 +26,7 @@ module Farscape
     end
 
     def embedded
-      Hash[representor.embedded.map{ |k, reps| [k, _embedded(reps)] }]
+      Hash[representor.embedded.map{ |k, reps| [k, _embedded(reps, response)] }]
     end
 
     def to_hash
@@ -40,16 +45,17 @@ module Farscape
 
     def reframe_representor(safe)
       agent = safe ? @agent.safe : @agent.unsafe
-      agent.representor.new(nil, @representor, agent)
+      agent.representor.new(nil, @response, agent)
     end
 
     def deserialize(requested_media_type, response_body)
       return response_body unless requested_media_type
+      response_body = response_body || EMPTY_BODIES[@agent.media_type]
       Representors::DeserializerFactory.build(requested_media_type, response_body).to_representor
     end
 
-    def _embedded(reprs)
-      reprs.map { |repr| @agent.representor.new(false, repr, @agent) }
+    def _embedded(reprs, response)
+      reprs.map { |repr| @agent.representor.new(false, OpenStruct.new(status: response.status, headers: response.headers, body: repr), @agent) }
     end
 
   end
