@@ -55,7 +55,6 @@ describe Farscape::RepresentorAgent do
         begin
           recall_drds.call
         rescue Farscape::Exceptions::NotFound => e
-          p e
           expect(e.error_description).to eq(Farscape::Exceptions::NotFound.new(nil).error_description)
           expect(e.representor.to_hash).to eq(e.message)
         end
