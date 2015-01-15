@@ -1,6 +1,7 @@
 require 'faraday'
 require 'farscape/client/base_client'
 require 'farscape/plugins'
+require 'farscape/errors'
 
 module Farscape
   class Agent
@@ -62,6 +63,37 @@ module Farscape
           unsafe: ['POST', 'PATCH'], # http://tools.ietf.org/html/rfc5789
           safe: ['GET', 'HEAD', 'OPTIONS', 'TRACE', 'CONNECT']
         }
+      end
+
+      def dispatch_error(response)
+        errors = Farscape::Exceptions
+        http_code = {
+          400 => errors::BadRequest,
+          401 => errors::Unauthorized,
+          403 => errors::Forbidden,
+          404 => errors::NotFound,
+          405 => errors::MethodNotAllowed,
+          406 => errors::NotAcceptable,
+          407 => errors::ProxyAuthenticationRequired,
+          408 => errors::RequestTimeout,
+          409 => errors::Conflict,
+          410 => errors::Gone,
+          411 => errors::LengthRequired,
+          412 => errors::PreconditionFailed,
+          413 => errors::RequestEntityTooLarge,
+          414 => errors::RequestUriTooLong,
+          415 => errors::UnsupportedMediaType,
+          416 => errors::RequestedRangeNotSatisfiable,
+          417 => errors::ExpectationFailed,
+          418 => errors::ImaTeapot,
+          500 => errors::InternalServerError,
+          501 => errors::NotImplemented,
+          502 => errors::BadGateway,
+          503 => errors::ServiceUnavailable,
+          504 => errors::GatewayTimeout,
+          505 => errors::ProtocolVersionNotSupported,
+        }
+        return http_code[response.status]
       end
 
     end

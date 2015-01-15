@@ -39,12 +39,26 @@ describe Farscape::RepresentorAgent do
 
       it 'can delete a drd' do
         # NB We compare attributes as the self link will differ between the two calls
+        recall_drds = ->() { @drd.transitions['self'].invoke { |r| r.parameters = can_do_hash }.to_hash[:attributes] }
         drd_attributes = @drd.to_hash[:attributes]
-        self_attributes = @drd.transitions['self'].invoke { |r| r.parameters = can_do_hash }.to_hash[:attributes]
+        self_attributes = recall_drds.call
         expect(self_attributes).to eq(drd_attributes)
         @drd.transitions['delete'].invoke
-        error_attributes = @drd.transitions['self'].invoke { |r| r.parameters = can_do_hash }.to_hash[:attributes]
-        expect(error_attributes).to_not eq(self_attributes)
+        expect { recall_drds.call }.to raise_error( Farscape::Exceptions::NotFound )
+      end
+
+      it 'can returns proper errors' do
+        # NB We compare attributes as the self link will differ between the two calls
+        recall_drds = ->() { @drd.transitions['self'].invoke { |r| r.parameters = can_do_hash }.to_hash[:attributes] }
+        drd_attributes = @drd.to_hash[:attributes]
+        @drd.transitions['delete'].invoke
+        begin
+          recall_drds.call
+        rescue Farscape::Exceptions::NotFound => e
+          p e
+          expect(e.error_description).to eq(Farscape::Exceptions::NotFound.new(nil).error_description)
+          expect(e.representor.to_hash).to eq(e.message)
+        end
       end
 
       it 'can update a drd' do
