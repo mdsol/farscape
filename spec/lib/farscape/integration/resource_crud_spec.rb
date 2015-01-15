@@ -47,7 +47,7 @@ describe Farscape::RepresentorAgent do
         expect { recall_drds.call }.to raise_error( Farscape::Exceptions::NotFound )
       end
 
-      it 'can returns proper errors' do
+      it 'returns proper errors' do
         # NB We compare attributes as the self link will differ between the two calls
         recall_drds = ->() { @drd.transitions['self'].invoke { |r| r.parameters = can_do_hash }.to_hash[:attributes] }
         drd_attributes = @drd.to_hash[:attributes]
