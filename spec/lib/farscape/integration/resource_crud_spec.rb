@@ -54,6 +54,7 @@ describe Farscape::RepresentorAgent do
         @drd.transitions['delete'].invoke
         begin
           recall_drds.call
+          raise Exception.new('Moya responded with a resource that\'s been deleted')
         rescue Farscape::Exceptions::NotFound => e
           expect(e.error_description).to eq(Farscape::Exceptions::NotFound.new(nil).error_description)
           expect(e.representor.to_hash).to eq(e.message)
