@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'json'
+require 'active_support/core_ext/string/filters'
 
 describe Farscape::RepresentorAgent do
   let(:entry_point) { "http://localhost:#{RAILS_PORT}"}
@@ -56,7 +57,9 @@ describe Farscape::RepresentorAgent do
           recall_drds.call
           raise Exception.new('Moya responded with a resource that\'s been deleted')
         rescue Farscape::Exceptions::NotFound => e
-          expect(e.error_description).to eq(Farscape::Exceptions::NotFound.new(nil).error_description)
+          expect(e.error_description).to eq('The server has not found anything matching the Request-URI.
+          No indication is given of whether the condition is temporary or permanent.
+          This status code is commonly used when the server does not wish to reveal exactly why the request has been refused, or when no other response is applicable.'.squish)
           expect(e.representor.to_hash).to eq(e.message)
         end
       end
