@@ -93,7 +93,7 @@ module Farscape
           504 => errors::GatewayTimeout,
           505 => errors::ProtocolVersionNotSupported,
         }
-        return http_code[response.status]
+        http_code[response.status]
       end
 
     end
