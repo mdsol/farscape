@@ -24,9 +24,7 @@ module Farscape
 
       response = @agent.client.invoke(call_options)
 
-      find_exception(response) #Guard the Return
-
-      reagent(response)
+      find_exception(response) || reagent(response)
     end
 
     def method_missing(meth, *args, &block)
