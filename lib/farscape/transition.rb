@@ -23,7 +23,8 @@ module Farscape
       call_options[:body] = options.attributes if options.attributes
 
       response = @agent.client.invoke(call_options)
-      @agent.representor.new(@agent.media_type, response, @agent)
+
+      find_exception(response) || reagent(response)
     end
 
     def method_missing(meth, *args, &block)
@@ -31,6 +32,15 @@ module Farscape
     end
 
     private
+
+    def reagent(response)
+      @agent.representor.new(@agent.media_type, response, @agent)
+    end
+
+    def find_exception(response)
+      error = @agent.client.dispatch_error(response)
+      raise error.new(reagent(response)) unless error.nil?
+    end
 
     def match_params(args, options)
       [:parameters, :attributes].each do |key_type|
