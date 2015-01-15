@@ -5,8 +5,6 @@ module Farscape
 
   class TransitionAgent
 
-    EMPTY_BODIES = { hale: "{}" } #TODO: Fix Representor to allow nil resources
-
     def initialize(transition, agent)
       @agent = agent
       @transition = transition
@@ -25,7 +23,7 @@ module Farscape
       call_options[:body] = options.attributes if options.attributes
 
       response = @agent.client.invoke(call_options)
-      @agent.representor.new(@agent.media_type, response.body || EMPTY_BODIES[@agent.media_type], @agent)
+      @agent.representor.new(@agent.media_type, response, @agent)
     end
 
     def method_missing(meth, *args, &block)

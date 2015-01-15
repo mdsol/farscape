@@ -22,7 +22,7 @@ module Farscape
       @entry_point ||= entry
       raise "No Entry Point Provided!" unless entry
       response = client.invoke(url: entry, headers: get_accept_header(media_type))
-      representor.new(media_type, response.body, self)
+      representor.new(media_type, response, self)
     end
 
     # TODO share this information with serialization factory base
