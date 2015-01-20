@@ -83,6 +83,11 @@ filtered_drds = search_transition.invoke do |builder|
 end
 ```
 
+You may also invoke transitions with automatic attribute and parameter matching
+```ruby
+drds.transitions['search'].invoke(search_term: '1812')
+```
+
 ### Transform resource state
 ```ruby
 embedded_drd_items = drds.items
@@ -97,7 +102,7 @@ deactivated_drd = deactivate_transition.invoke
 deactivated_drd.attributes # => { name: '1812' }
 deactivated_drd.transitions # => ['self', 'activate', 'leviathan']
 
-deactivate_transition.invoke # => raise Farscape::Agent::Gone error
+deactivate_transition.invoke # => raise Farscape::Excpetions::Gone error
 ```
 
 ### Transform application state
@@ -162,6 +167,14 @@ drd.name = 'Susan' # => Raises NoMethodError
 
 If an attribute or transition's name conflicts with an existing method or reserved word, it will not be methodized and must be accessed through the hash interface.
 
+### Disabling the Alternate Interface
+If you're concerned about namespace collisions, or want to ensure that your code is highly flexible and explicit (albeit verbose), you may turn off the interface with the .safe method.
+```ruby
+safe_drd = drd.safe # => returns a drd resource without the alternate interface
+safe_drd.name # => UndefinedMethod error
+```
+
+You may reenable the alternate interface with .unsafe
 
 ## Contributing
 See [CONTRIBUTING][] for details.
