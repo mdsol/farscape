@@ -136,6 +136,16 @@ describe Farscape::SafeRepresentorAgent do
           expect {resource.status}.to raise_error(NoMethodError)
         end
       end
+
+      context "When using ALternate Interface" do
+        it "can change to and from a safe representor" do
+           drds = agent.enter(entry_point).drds(can_do_hash)
+           safely = drds.safe
+           unsafely = safely.unsafe
+           expect(safely.transitions.keys).to eq(unsafely.transitions.keys) # TODO: Representor should support descriptor equality
+        end
+      end
+
     end
 
     context "Explore" do

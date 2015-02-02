@@ -13,6 +13,7 @@ module Farscape
     def initialize(requested_media_type, response, agent)
       @agent = agent
       @response = response
+      @requested_media_type = requested_media_type
       @representor = deserialize(requested_media_type, response.body)
     end
 
@@ -43,9 +44,11 @@ module Farscape
 
     private
 
-    def reframe_representor(safe)
-      agent = safe ? @agent.safe : @agent.unsafe
-      agent.representor.new(nil, @response, agent)
+    def reframe_representor(safety)
+      #require 'pry'
+      #binding.pry
+      agent = safety ? @agent.safe : @agent.unsafe
+      agent.representor.new(@requested_media_type, @response, agent)
     end
 
     def deserialize(requested_media_type, response_body)
