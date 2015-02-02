@@ -142,7 +142,9 @@ describe Farscape::SafeRepresentorAgent do
            drds = agent.enter(entry_point).drds(can_do_hash)
            safely = drds.safe
            unsafely = safely.unsafe
+           expect(safely.attributes.keys).to eq(unsafely.attributes.keys) # TODO: Representor should support descriptor equality
            expect(safely.transitions.keys).to eq(unsafely.transitions.keys) # TODO: Representor should support descriptor equality
+           expect(safely.embedded.keys).to eq(unsafely.embedded.keys) # TODO: Representor should support descriptor equality
         end
       end
 
