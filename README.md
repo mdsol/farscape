@@ -125,7 +125,7 @@ new_drd = create_transition.invoke do |builder|
 end
 
 new_drd.attributes # => { name: 'Pike' }
-new_drd.transitions # => ['self', 'edit', 'delete', 'deactivate', 'leviathan']
+new_drd.transitions.keys # => ['self', 'edit', 'delete', 'deactivate', 'leviathan']
 ```
 
 For more examples and information on using Faraday with media-types that require specifying uniform-interface methods 
@@ -172,9 +172,10 @@ If you're concerned about namespace collisions, or want to ensure that your code
 ```ruby
 safe_drd = drd.safe # => returns a drd resource without the alternate interface
 safe_drd.name # => UndefinedMethod error
+drd.name # => "Pike"
 ```
 
-You may reenable the alternate interface with .unsafe
+You may reenable the alternate interface with `.unsafe`.
 
 ## Contributing
 See [CONTRIBUTING][] for details.
