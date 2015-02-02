@@ -137,7 +137,7 @@ describe Farscape::SafeRepresentorAgent do
         end
       end
 
-      context "When using ALternate Interface" do
+      context "When using Alternate Interface" do
         it "can change to and from a safe representor" do
            drds = agent.enter(entry_point).drds(can_do_hash)
            safely = drds.safe
