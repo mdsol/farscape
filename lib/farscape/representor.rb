@@ -45,8 +45,6 @@ module Farscape
     private
 
     def reframe_representor(safety)
-      #require 'pry'
-      #binding.pry
       agent = safety ? @agent.safe : @agent.unsafe
       agent.representor.new(@requested_media_type, @response, agent)
     end
