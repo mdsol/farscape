@@ -45,8 +45,6 @@ describe Farscape::SafeRepresentorAgent do
       expect{ agent.enter }.to raise_error(RuntimeError) # TODO: Create Exact Error Interface for Farscape
     end
 
-    it 'raises a NoMethodError '
-
   end
 
   context "API Interaction" do
