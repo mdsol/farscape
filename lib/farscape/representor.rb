@@ -94,7 +94,7 @@ module Farscape
     end
 
     def method_transitions
-      transitions.map { |k,v| @agent.client.safe_method?( v.interface_method ) ? {k => v}  : {k+'!' => v} }.reduce(:merge)
+      transitions.map { |k,v| @agent.client.safe_method?( v.interface_method ) ? {k => v}  : {k+'!' => v} }.reduce({}, :merge)
     end
 
   end

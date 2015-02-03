@@ -44,6 +44,7 @@ describe Farscape::SafeRepresentorAgent do
 
       expect{ agent.enter }.to raise_error(RuntimeError) # TODO: Create Exact Error Interface for Farscape
     end
+
   end
 
   context "API Interaction" do
@@ -120,8 +121,9 @@ describe Farscape::SafeRepresentorAgent do
           expect {resource.status = 'ninja food'}.to raise_error(NoMethodError)
         end
         it "throws on unknown" do
-          resource = agent.enter(entry_point).drds(can_do_hash).items.first
+          resource = agent.enter(entry_point).drds(can_do_hash).items.find { |drd| drd.status == 'deactivated' }
           expect {resource.ninja}.to raise_error(NoMethodError)
+          expect {resource.self {|r| r.parameters = {'conditions' => 'can_do_anything'}}.activate!.activate!}.to raise_error(NoMethodError, /undefined method `activate!' for/)
         end
       end
       context "When handling namespace collisions" do
