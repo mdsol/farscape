@@ -93,6 +93,7 @@ describe Farscape::SafeRepresentorAgent do
           drones = resources.drds { |req| req.parameters = can_do_hash }
           begin
             drones.create!
+            raise StandardError
           rescue Farscape::Exceptions::UnprocessableEntity => e
             expect(e.representor.transitions.keys).to include('help')
           end

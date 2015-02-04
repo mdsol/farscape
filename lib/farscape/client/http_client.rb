@@ -94,7 +94,7 @@ module Farscape
           504 => errors::GatewayTimeout,
           505 => errors::ProtocolVersionNotSupported,
         }
-        http_code[response.status] || errors::ProtocolException if response.status > 299
+        http_code[response.status] || errors::ProtocolException unless response.success?
       end
 
     end
