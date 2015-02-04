@@ -32,7 +32,7 @@ module Farscape
       rescue JSON::ParserError
         representing = response
       end
-      raise error.new(representing) unless error.nil?
+      raise error.new(representing) if error
       representing
     end
 
