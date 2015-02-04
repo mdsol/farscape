@@ -86,6 +86,7 @@ module Farscape
           416 => errors::RequestedRangeNotSatisfiable,
           417 => errors::ExpectationFailed,
           418 => errors::ImaTeapot,
+          422 => errors::UnprocessableEntity,
           500 => errors::InternalServerError,
           501 => errors::NotImplemented,
           502 => errors::BadGateway,
@@ -93,7 +94,7 @@ module Farscape
           504 => errors::GatewayTimeout,
           505 => errors::ProtocolVersionNotSupported,
         }
-        http_code[response.status]
+        http_code[response.status] || errors::ProtocolException unless response.success?
       end
 
     end

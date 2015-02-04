@@ -17,6 +17,7 @@ module Farscape
         'Unknown Error'
       end
     end
+    
     #4xx
     class BadRequest < ProtocolException
       def error_description
@@ -127,6 +128,12 @@ module Farscape
       end
     end
 
+    class UnprocessableEntity < ProtocolException
+      def error_description
+        'The request was well-formed but was unable to be followed due to semantic errors.'.squish
+      end
+    end
+
     #5xx
     class InternalServerError < ProtocolException
       def error_description
@@ -160,5 +167,6 @@ module Farscape
         The server is indicating that it is unable or unwilling to complete the request using the same protocol as the client'.squish
       end
     end
+
   end
 end

@@ -24,7 +24,7 @@ module Farscape
 
       response = @agent.client.invoke(call_options)
 
-      find_exception(response) || reagent(response)
+      @agent.find_exception(response)
     end
 
     def method_missing(meth, *args, &block)
@@ -33,19 +33,10 @@ module Farscape
 
     private
 
-    def reagent(response)
-      @agent.representor.new(@agent.media_type, response, @agent)
-    end
-
-    def find_exception(response)
-      error = @agent.client.dispatch_error(response)
-      raise error.new(reagent(response)) unless error.nil?
-    end
-
     def match_params(args, options)
       [:parameters, :attributes].each do |key_type|
         field_list = @transition.public_send(key_type)
-        field_names =field_list.map { |field| field.name.to_sym }
+        field_names = field_list.map { |field| field.name.to_sym }
         filtered_values = args.select { |k,_| field_names.include?(k) }
         values = filtered_values.merge(options.public_send(key_type) || {})
         options.public_send(:"#{key_type}=", values)

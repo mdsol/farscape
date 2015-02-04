@@ -92,7 +92,12 @@ describe Farscape::SafeRepresentorAgent do
           expect { resources.drds { |req| req.parameters = can_do_hash }.create }.to raise_error(NoMethodError) # TODO: Create Exact Error Interface for Farscape
 
           drones = resources.drds { |req| req.parameters = can_do_hash }
-          expect(drones.create!.transitions.keys).to include('help')
+          begin
+            drones.create!
+            raise StandardError
+          rescue Farscape::Exceptions::UnprocessableEntity => e
+            expect(e.representor.transitions.keys).to include('help')
+          end
         end
 
         it "can be called with arguments" do
