@@ -22,9 +22,18 @@ module Farscape
       @entry_point ||= entry
       raise "No Entry Point Provided!" unless entry
       response = client.invoke(url: entry, headers: get_accept_header(media_type))
+      find_exception(response)
+    end
+
+    def find_exception(response)
       error = client.dispatch_error(response)
-      raise error.new(representor.new(media_type, response, self)) unless error.nil?
-      representor.new(media_type, response, self)
+      begin
+        representing = representor.new(media_type, response, self)
+      rescue JSON::ParserError
+        representing = response
+      end
+      raise error.new(representing) unless error.nil?
+      representing
     end
 
     # TODO share this information with serialization factory base

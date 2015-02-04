@@ -19,8 +19,7 @@ describe Farscape::Agent do
 
     it 'raises an appropriate error when giving invalid requests' do
       expect{ Farscape::Agent.new.enter("http://localhost:#{RAILS_PORT}/drds/ninja_boot")}.to raise_error(Farscape::Exceptions::UnprocessableEntity)
-      #expect{ Farscape::Agent.new.enter("http://localhost:#{RAILS_PORT}/ninja_boot")}.to raise_error(RuntimeError)
-
+      expect{ Farscape::Agent.new.enter("http://localhost:#{RAILS_PORT}/ninja_boot")}.to raise_error(Farscape::Exceptions::NotFound)
     end
   end
 end
