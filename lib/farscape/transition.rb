@@ -45,7 +45,7 @@ module Farscape
     def match_params(args, options)
       [:parameters, :attributes].each do |key_type|
         field_list = @transition.public_send(key_type)
-        field_names =field_list.map { |field| field.name.to_sym }
+        field_names = field_list.map { |field| field.name.to_sym }
         filtered_values = args.select { |k,_| field_names.include?(k) }
         values = filtered_values.merge(options.public_send(key_type) || {})
         options.public_send(:"#{key_type}=", values)
