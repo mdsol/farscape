@@ -11,16 +11,22 @@ module Farscape
     end
 
     def invoke(args={})
+      defaults = { url:     '',
+                   method:  'get',
+                   params:  {},
+                   body:    '', #WRONG!
+                   headers: {} #WRONG!
+                  }
       opts=OpenStruct.new
       yield opts if block_given?
       options = match_params(args, opts)
 
       call_options = {}
-      call_options[:url] = @transition.uri
-      call_options[:method] = @transition.interface_method
+      call_options[:url] = @transition.uri || ''
+      call_options[:method] = @transition.interface_method || 'get'
       call_options[:headers] = @agent.get_accept_header(@agent.media_type).merge(options.headers || {})
-      call_options[:params] = options.parameters if options.parameters
-      call_options[:body] = options.attributes if options.attributes
+      call_options[:params] = options.parameters ? options.parameters : {}
+      call_options[:body] = options.attributes ? options.attributes : ''
 
       response = @agent.client.invoke(call_options)
 
