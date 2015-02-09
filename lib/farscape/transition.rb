@@ -11,12 +11,6 @@ module Farscape
     end
 
     def invoke(args={})
-      defaults = { url:     '',
-                   method:  'get',
-                   params:  {},
-                   body:    '', #WRONG!
-                   headers: {} #WRONG!
-                  }
       opts=OpenStruct.new
       yield opts if block_given?
       options = match_params(args, opts)
