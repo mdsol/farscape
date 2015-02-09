@@ -12,6 +12,7 @@ module Farscape
 
       def initialize
         @connection = Faraday.new do |builder|
+          builder.request :url_encoded
           Farscape.middleware_stack.each do |middleware|
             if middleware.key?(:config)
               config = middleware[:config]
@@ -24,7 +25,7 @@ module Farscape
               builder.use(middleware[:class])
             end
           end
-          builder.request :url_encoded
+
           builder.adapter faraday_adapter
         end
       end
@@ -41,19 +42,14 @@ module Farscape
       #  params, body, and headers.
       # @return [Faraday::Response] The response object resulting from the Faraday call
       def invoke(options = {})
-        defaults = { url:     '',
-                     method:  'get',
-                     params:  {},
-                     body:    '',
-                     headers: {}
-                    }
+        defaults = { method:  'get'}
         options = defaults.merge(options)
 
         connection.send(options[:method].to_s.downcase) do |req|
           req.url options[:url]
-          req.body = options[:body]
-          options[:params].each { |k,v| req.params[k] = v }
-          options[:headers].each { |k,v| req.headers[k] = v }
+          req.body = options[:body] if options.has_key?(:body)
+          options[:params].each { |k,v| req.params[k] = v } if options.has_key?(:params)
+          options[:headers].each { |k,v| req.headers[k] = v } if options.has_key?(:headers)
         end
       end
 
