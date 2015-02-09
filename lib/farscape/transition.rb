@@ -14,8 +14,6 @@ module Farscape
       opts=OpenStruct.new
       yield opts if block_given?
       options = match_params(args, opts)
-      # require 'pry'
-      # binding.pry
 
       call_options = {}
       call_options[:url] = @transition.uri
