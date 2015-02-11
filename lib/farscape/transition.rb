@@ -19,8 +19,8 @@ module Farscape
       call_options[:url] = @transition.uri
       call_options[:method] = @transition.interface_method
       call_options[:headers] = @agent.get_accept_header(@agent.media_type).merge(options.headers || {})
-      call_options[:params] = options.parameters if options.parameters
-      call_options[:body] = options.attributes if options.attributes
+      call_options[:params] = options.parameters unless options.parameters.blank?
+      call_options[:body] = options.attributes unless options.parameters.blank?
 
       response = @agent.client.invoke(call_options)
 
