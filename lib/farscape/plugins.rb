@@ -32,6 +32,14 @@ module Farscape
       plugins_to_disable.each { |plugin| disable_plugin(plugin) }
     end
 
+    def reenable(options)
+      if disabled_plugins.include?(options[:name]) || disabled_plugins.include?(options[:type])
+        disabled_plugins.delete(options[:name]) #if disabled_plugins.include?(options[:name])
+        disabled_plugins.delete(options[:type]) #if disabled_plugins.include?(options[:type])
+        register_plugin(options)
+      end
+    end
+
     # Removes all plugins and disablings of plugins
     def clear
       plugins.each { |pi| disable_plugin(pi) }

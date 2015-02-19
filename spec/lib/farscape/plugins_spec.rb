@@ -71,6 +71,15 @@ describe Farscape do
       expect(Farscape.plugins).to be_one
     end
 
+    it "can reenable a plugin after it's been disabled" do
+      Farscape.register_plugin(name: :Peacekeeper, type: :sebacean)
+      Farscape.register_plugin(name: :Imperium, type: :scarran)
+      Farscape.disable(:sebacean)
+      expect(Farscape.plugins).to eq([{:name=>:Imperium, :type=>:scarran}])
+      Farscape.reenable(name: :Peacekeeper, type: :sebacean)
+      expect(Farscape.plugins).to eq([{:name=>:Imperium, :type=>:scarran}, {:name=>:Peacekeeper, :type=>:sebacean}])
+    end
+
     context 'adding middleware' do
 
       it 'can add middleware' do
