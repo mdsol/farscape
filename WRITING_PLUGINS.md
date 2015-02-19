@@ -6,23 +6,20 @@ Farscape Plugins can be used to add drop-in functionality to Farscape.
 
 A Farscape plugin is described with a hash with a set of well defined keys
 
-### name
+#### name
 This is a symbol representing the name of the plugin
 
-### type
+#### type
 The type of plugin, this is useful for manipulating multiple plguins simultaneously
 
-### middleware
+#### middleware
 Middleware objects as per [Faraday plugins](https://github.com/lostisland/faraday#writing-middleware)
 
-### extensions
-A list of classes which will extend the default functionality of Farscape clases.
-
-### extends
-A list of classes which will be extended by :extensions
+#### extensions
+A hash whos keys are the Farscape clases to be extended and values are a list of classes which will extend the default functionality of Farscape clases.
 Possible extends values are: :Agent, :HttpClient, :SafeRepresentorAgent, :RepresentorAgent, and :TransitionAgent
 
-### default_state
+#### default_state
 When registered, is this :enabled or :disabled by default
 
 ### Example
@@ -31,8 +28,7 @@ When registered, is this :enabled or :disabled by default
   name: :PluginName
   type: :ExampleType
   middleware: PluginMiddlewareClass
-  extension: [ExtentionClass]
-  extends: [:Agent]
+  extension: { :Agent => [ExtenstionClass], :RepresentorAgent => [ExtensionClass, Walrus] }
   default_state: :enabled
 }
 ```
@@ -66,10 +62,10 @@ Farscape.register_plugin({name: :Peacekeeper, type: :sebacean, middleware: [Test
 Farscape.plugins #=> [{name: :Peacekeeper, type: :sebacean, middleware: [TestMiddleware::NoGetNoProblem]}]
 Farscape.enabled_plugins #=> [{name: :Peacekeeper, type: :sebacean, middleware: [TestMiddleware::NoGetNoProblem]}]
 Farscape.disabled_plugins #=> []
-Farscape.disable(type: :sebacean)
+Farscape.disable!(type: :sebacean)
 Farscape.enabled_plugins #=> []
 Farscape.disabled_plugins #=> [{name: :Peacekeeper, type: :sebacean, middleware: [TestMiddleware::NoGetNoProblem]}]
-Farscape.disable(name: :Peacekeeper)
+Farscape.enable!(name: :Peacekeeper)
 Farscape.enabled_plugins #=> [{name: :Peacekeeper, type: :sebacean, middleware: [TestMiddleware::NoGetNoProblem]}]
 Farscape.disabled_plugins #=> []
 ```
