@@ -20,7 +20,7 @@ A hash whos keys are the Farscape clases to be extended and values are a list of
 Possible keys are: `:Agent`, `:HttpClient`, `:SafeRepresentorAgent`, `:RepresentorAgent`, and `:TransitionAgent`
 
 #### default_state
-When registered, is this :enabled or :disabled by default
+When registered, is this :enabled or :disabled by default it is :enabled
 
 ### Example
 ```ruby
