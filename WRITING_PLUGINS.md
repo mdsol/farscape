@@ -12,15 +12,6 @@ Farscape.register_plugin(name: :cachinator, type: :cache, ...)
 
 Feel free to put this code at the bottom of `cachinator.rb` so that it turns on automatically after the gem is loaded. Consumers who want control can include a line in their initializer reading `Farscape.disable(:cachinator)` or `Farscape.disable(:cache)`. If you'd rather have your plugin be off by default, you could instead wrap the register_plugin call in, say, a `Cachinator.activate` method for the consumer to call as desired. If your plugin is http-specific (say it adds Authentication headers), include `protocol: :http`.
 
-Consumers may also reendable the plugin by using the `reenable` method, which has the same interface as `register_plugin`, but only works is the plugin is already disabled.
-
-Example:
-```ruby
-Farscape.register_plugin(name: :cachinator, type: :cache)
-Farscape.disable(:cachinator)
-Farscape.reenable(name: :cachinator, type: :cache)
-```
-
 # Adding Middleware
 
 You can probably do what you need to do by writing [Faraday](https://github.com/lostisland/faraday)-style middleware. Middleware can inspect and alter outgoing requests and incoming responses, abort requests, and define hooks that run after a request/response cycle completes. All it needs to do is obey [a simple API](https://github.com/lostisland/faraday#writing-middleware).
