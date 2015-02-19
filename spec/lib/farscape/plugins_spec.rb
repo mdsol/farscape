@@ -37,6 +37,67 @@ module TestMiddleware
 
 end
 
+
+
+
+# Farscape Plugin Configuration Hash
+# {
+#   name: The Name of the Plugin
+#   type: The type of plugin
+#   middleware: A list of either objects of middleware hashes
+#   extension: A list of objects
+#   extends: A list of symbols referencing farscape objects 
+#   default_state: :enabled or :disabled (defualts to :enabled)
+# }
+
+# Farscape.register_plugin # Registers the object and puts it in its default state 
+# Farscape.plugins # A list of all plugins
+# Farscape.enabled_plugins # A list of plugins in the enabled state 
+# Farscape.disabled_plugins # A list of plugins in the disables state 
+# Farscape.enable(options) # options is a hash, name or type are allowed keys, enables matching plugins 
+# Farscape.disable(options) # options is a hash, name or type are allowed keys, enables matching plugins 
+
+# Sample Workflow for Enable/Disable
+# Farscape.register_plugin({name: :Peacekeeper, type: :sebacean, middleware: [TestMiddleware::NoGetNoProblem]})
+# Farscape.plugins #=> [{name: :Peacekeeper, type: :sebacean, middleware: [TestMiddleware::NoGetNoProblem]}]
+# Farscape.enabled_plugins #=> [{name: :Peacekeeper, type: :sebacean, middleware: [TestMiddleware::NoGetNoProblem]}]
+# Farscape.disabled_plugins #=> []
+# Farscape.disable(type: :sebacean)
+# Farscape.enabled_plugins #=> []
+# Farscape.disabled_plugins #=> [{name: :Peacekeeper, type: :sebacean, middleware: [TestMiddleware::NoGetNoProblem]}]
+# Farscape.disable(name: :Peacekeeper)
+# Farscape.enabled_plugins #=> [{name: :Peacekeeper, type: :sebacean, middleware: [TestMiddleware::NoGetNoProblem]}]
+# Farscape.disabled_plugins #=> [] 
+
+# Sample Workflow for extensions
+# class HttpPersistentClient
+#   def faraday_adapter
+#     :net_http_persistent
+#   end
+# end
+# Farscape.register_plugin(name: :http_persist, type: :http, extends: [:HTTPClient], extentsions: [HttpPersistentClient])
+
+# Agent and RepresentorAgent plugin interface
+#
+# #plguins, #enabled_plugins, #disabled_plugins -> work as per Farscape 
+# Agent.using(name or type) # enables a registered plugin for this instance
+# Agent.omitting(name or type) # disables a registered plugin for this instance
+
+# Agent and RepresentorAgent workflow
+# Farscape.enabled_plugins #=> [{name: :Peacekeeper, type: :sebacean, middleware: [TestMiddleware::NoGetNoProblem]}]
+# agent = Farscape.Agent.new.omitting(name: :Peacekeeper)
+# agent.plugins # => [{name: :Peacekeeper, type: :sebacean, middleware: [TestMiddleware::NoGetNoProblem]}]
+# agent.enabled_plugins # => []
+# agent.plugins # => [{name: :Peacekeeper, type: :sebacean, middleware: [TestMiddleware::NoGetNoProblem]}]
+# resource = agent.enter(entry_point).transitions[:listing].invoke
+# resource.plugins # => [{name: :Peacekeeper, type: :sebacean, middleware: [TestMiddleware::NoGetNoProblem]}]
+# resource.enabled_plugins # => []
+# resource.plugins # => [{name: :Peacekeeper, type: :sebacean, middleware: [TestMiddleware::NoGetNoProblem]}]
+# details = resource.using(name: :Peacekeeper).transitions[:items][0].invoke
+# details.plugins # => [{name: :Peacekeeper, type: :sebacean, middleware: [TestMiddleware::NoGetNoProblem]}]
+# details.enabled_plugins # => []
+# details.disabled_plugins # => [{name: :Peacekeeper, type: :sebacean, middleware: [TestMiddleware::NoGetNoProblem]}]
+
 describe Farscape do
 
   context 'configuring plugins' do
