@@ -17,7 +17,7 @@ Middleware objects as per [Faraday plugins](https://github.com/lostisland/farada
 
 #### extensions
 A hash whos keys are the Farscape clases to be extended and values are a list of classes which will extend the default functionality of Farscape clases.
-Possible extends values are: :Agent, :HttpClient, :SafeRepresentorAgent, :RepresentorAgent, and :TransitionAgent
+Possible keys are: `:Agent`, `:HttpClient`, `:SafeRepresentorAgent`, `:RepresentorAgent`, and `:TransitionAgent`
 
 #### default_state
 When registered, is this :enabled or :disabled by default
