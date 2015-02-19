@@ -19,8 +19,6 @@ module Farscape
     end
 
     def enter(entry = entry_point)
-      add_headers=OpenStruct.new
-      yield add_headers if block_given?
       @entry_point ||= entry
       raise "No Entry Point Provided!" unless entry
       response = client.invoke(url: entry, headers: get_accept_header(media_type))
