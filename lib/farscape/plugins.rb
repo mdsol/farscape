@@ -34,7 +34,7 @@ module Farscape
     # Else if :default_state was passed in return :default_state
     def why_disabled(options)
       maybe = @disabling_rules.map { |hash| hash.select { |k,v| k if v == options[k] } }
-      maybe |= [disabled_plugins[:name]]
+      maybe |= [disabled_plugins[options[:name]]]
       maybe |= [:default_state] if options[:default_state] == :disabled
       maybe.compact
     end
