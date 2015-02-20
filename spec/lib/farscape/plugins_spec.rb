@@ -39,6 +39,8 @@ end
 
 describe Farscape do
   after(:all) { Farscape.clear }  
+  
+
   context 'configuring plugins' do
 
     before(:each) { Farscape.clear }
@@ -82,6 +84,7 @@ describe Farscape do
       it 'can add middleware' do
         plugin = {name: :Peacekeeper, type: :sebacean, middleware: [TestMiddleware::NoGetNoProblem]}
         Farscape.register_plugin(plugin)
+        
         expect(Farscape.middleware_stack.map{ |elt| elt[:class] } ).to eq([TestMiddleware::NoGetNoProblem])
       end
 
@@ -89,24 +92,28 @@ describe Farscape do
         plugin = {name: :Peacekeeper, type: :sebacean, middleware: [TestMiddleware::NoGetNoProblem]}
         Farscape.register_plugin(plugin)
         Farscape.disable!( :sebacean )
+        
         expect(Farscape.middleware_stack).to be_none
       end
 
       it 'uses the middleware when making requests' do
         plugin = {name: :Peacekeeper, type: :sebacean, middleware: [TestMiddleware::NoGetNoProblem]}
         Farscape.register_plugin(plugin)
+        
         expect{Farscape::Agent.new("http://localhost:#{RAILS_PORT}").enter}.to raise_error('Shazam!')
       end
 
       it 'can configure middleware' do
         plugin = {name: :Peacekeeper, type: :sebacean, middleware: [{class: TestMiddleware::NoGetNoProblem, config: {permissive: true}}]}
         Farscape.register_plugin(plugin)
+        
         expect{Farscape::Agent.new("http://localhost:#{RAILS_PORT}").enter}.not_to raise_error('Shazam!')
       end
 
       it 'adds middleware to disabled when disabled' do
           plugin = {name: :Peacekeeper, default_state: :disabled, type: :sebacean, middleware: [{class: TestMiddleware::NoGetNoProblem, config: {permissive: true}}]}
           Farscape.register_plugin(plugin)
+          
           expect(Farscape.enabled_plugins).to eq({})
           expect(Farscape.disabled_plugins).to eq(plugin[:name] => plugin)
       end
@@ -117,6 +124,7 @@ describe Farscape do
           saboteur_plugin = {name: :saboteur, type: :scarran, middleware: [saboteur_middleware]}
           detector_plugin = {name: :detector, type: :sebacean, middleware: [TestMiddleware::SabotageDetector]}
           [saboteur_plugin, detector_plugin].shuffle.each { |plugin| Farscape.register_plugin(plugin) }
+          
           expect(Farscape.middleware_stack.map{ |m| m[:class] }).to eq( [TestMiddleware::Saboteur, TestMiddleware::SabotageDetector] )
           expect{Farscape::Agent.new("http://localhost:#{RAILS_PORT}").enter}.to raise_error('Sabotage detected')
         end
@@ -128,9 +136,20 @@ describe Farscape do
           saboteur_plugin = {name: :saboteur, type: :scarran, middleware: [saboteur_middleware]}
           detector_plugin = {name: :detector, type: :sebacean, middleware: [TestMiddleware::SabotageDetector]}
           [saboteur_plugin, detector_plugin].shuffle.each { |plugin| Farscape.register_plugin(plugin) }
+          
           expect(Farscape.middleware_stack.map{ |m| m[:class] }).to eq( [TestMiddleware::SabotageDetector, TestMiddleware::Saboteur] )
           expect{Farscape::Agent.new("http://localhost:#{RAILS_PORT}").enter}.not_to raise_error('Sabotage detected')
         end
+      end
+      
+      it 'doesn\'t disable everything with one' do
+        detector_plugin = {name: :detector, type: :sebacean, middleware: [TestMiddleware::SabotageDetector], default_state: :disabled}
+        saboteur_middleware = {class: TestMiddleware::Saboteur}
+        saboteur_plugin = {name: :saboteur, type: :scarran, middleware: [saboteur_middleware]}
+        Farscape.register_plugin(detector_plugin)
+        Farscape.register_plugin(saboteur_plugin)
+        
+        expect(Farscape.enabled_plugins.keys).to eq([:saboteur])
       end
 
     end
@@ -143,13 +162,18 @@ describe Farscape do
         registration = [{name: :Peacekeeper, type: :sebacean, middleware: [TestMiddleware::NoGetNoProblem]}]
         registration_keys = registration.map { |plugin| plugin[:name] }
         Farscape.register_plugins(registration)
+        
         expect(Farscape.plugins.keys).to eq( registration_keys )
         expect(Farscape.enabled_plugins.keys).to eq( registration_keys )
         expect(Farscape.disabled_plugins.keys).to eq([])
+        
         Farscape.disable!(type: :sebacean)
+        
         expect(Farscape.enabled_plugins.keys).to eq([])
         expect(Farscape.disabled_plugins.keys).to eq( registration_keys )
+        
         Farscape.enable!(name: :Peacekeeper)
+        
         expect(Farscape.enabled_plugins.keys).to eq( registration_keys )
         expect(Farscape.disabled_plugins.keys).to eq([])
       end
