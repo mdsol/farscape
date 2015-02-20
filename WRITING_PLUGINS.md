@@ -26,7 +26,7 @@ When registered, is this :enabled or :disabled by default it is :enabled
 ```ruby
 {
   name: :PluginName
-  type: :ExampleType
+  type: :example_type
   middleware: PluginMiddlewareClass
   extension: { :Agent => [ExtenstionClass], :RepresentorAgent => [ExtensionClass, Walrus] }
   default_state: :enabled
@@ -38,10 +38,10 @@ When registered, is this :enabled or :disabled by default it is :enabled
 To register your plugin, run 
 
 ```ruby
-Farscape.register_plugin(name: :cachinator, type: :cache, ...)
+Farscape.register_plugin(name: :Cachinator, type: :cache, ...)
 ```
 
-Feel free to put this code at the bottom of `cachinator.rb` so that it turns on automatically after the gem is loaded. Consumers who want control can include a line in their initializer reading `Farscape.disable!(:cachinator)` or `Farscape.disable!(:cache)`. If you'd rather have your plugin be off by default, you could instead wrap the register_plugin call in, say, a `Cachinator.activate` method for the consumer to call as desired. If your plugin is http-specific (say it adds Authentication headers), include `protocol: :http`.
+Feel free to put this code at the bottom of `cachinator.rb` so that it turns on automatically after the gem is loaded. Consumers who want control can include a line in their initializer reading `Farscape.disable!(:Cachinator)` or `Farscape.disable!(:cache)`. If you'd rather have your plugin be off by default, you could instead wrap the register_plugin call in, say, a `Cachinator.activate` method for the consumer to call as desired. If your plugin is http-specific (say it adds Authentication headers), include `protocol: :http`.
 
 # Managing Plugins
 Of the set of registered plugins, some will be enabled, and others disabled. Enabled plugins will apply their specified functionality to any current Farscape instance.  
@@ -104,7 +104,7 @@ You can probably do what you need to do by writing [Faraday](https://github.com/
 To add your middleware to the stack, run
 
 ```ruby
-Farscape.register_plugin(name: :cachinator, type: :cache, middleware: [Cachinator::Middleware], ...)
+Farscape.register_plugin(name: :Cachinator, type: :cache, middleware: [Cachinator::Middleware], ...)
 ```
 
 If you need to partially order your middleware, the elements of the middleware array can be hashes of the form:
@@ -138,8 +138,8 @@ module Peacekeeper
     raise if representor.transitions.keys.include?(:attack)
   end
 end
-Farscape.register_plugin(name: :peacekeeper, type: :security, extensions: [Peacekeeper], extends: [:Agent])
-agent.enter(url).using(:peacekeeper).pacify!
+Farscape.register_plugin(name: :Peacekeeper, type: :security, extensions: [Peacekeeper], extends: [:Agent])
+agent.enter(url).using(:Peacekeeper).pacify!
 ```
 
 # Farscape Utilities
