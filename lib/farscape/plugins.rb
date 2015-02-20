@@ -4,7 +4,6 @@ module Farscape
 
   @plugins = {}
   @disabling_rules = []
-  @middleware_stack = PartiallyOrderedList.new { |m,n| order_middleware(m,n) }
 
   class <<self
 
@@ -34,14 +33,14 @@ module Farscape
     def why_disabled(options)
       maybe = @disabling_rules.map { |hash| hash.select { |k,v| k if v == options[k] } }
       maybe |= disabled_plugins.map { |k,v| v[:name] }
-      maybe |= [:default_state] if options[:default_state] && options[:default_state] == :disabled
+      maybe |= [:default_state] if options[:default_state] == :disabled
       maybe || []
     end
     
     def disabled?(options)
       options = normalize_selector(options)
       return @plugins[options[:name]][:enabled] if options.include?([:name])
-      why_disabled(options).empty? ? false : true
+      why_disabled(options).any?
     end
     
     def enabled?(options)
