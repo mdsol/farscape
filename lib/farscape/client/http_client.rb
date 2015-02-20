@@ -10,10 +10,10 @@ module Farscape
       # The Faraday connection instance.
       attr_reader :connection
 
-      def initialize
+      def initialize(agent)
         @connection = Faraday.new do |builder|
           builder.request :url_encoded
-          Farscape.middleware_stack.each do |middleware|
+          agent.middleware_stack.each do |middleware|
             if middleware.key?(:config)
               config = middleware[:config]
               if config.is_a?(Array)

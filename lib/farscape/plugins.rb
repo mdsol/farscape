@@ -66,8 +66,11 @@ module Farscape
     end
 
     # Returns the Poset representing middleware dependency
-    def middleware_stack
-      @middleware_stack ||= construct_stack(enabled_plugins)
+    def middleware_stack(overrides={})
+      @middleware_stack ||= Hash.new do |h, key|
+        h[key] = construct_stack(key)
+      end
+      @middleware_stack[enabled_plugins.merge(overrides)]
     end
     
     # Removes all plugins and disablings of plugins
@@ -75,6 +78,16 @@ module Farscape
       @plugins = {}
       @disabling_rules = []
       @middleware_stack = nil
+    end
+
+    def normalize_selector(name_or_type)
+      name_or_type.is_a?(Hash) ? name_or_type : { name: name_or_type, type: name_or_type}
+    end
+
+    def find_attr_intersect(master_hash, selector_hash)
+      master_hash.map do |mkey, mval|
+        selector_hash.map { |skey, sval| mkey if mval[skey] == sval }
+      end.flatten.compact
     end
 
     private
@@ -97,10 +110,6 @@ module Farscape
       stack
     end
 
-    def normalize_selector(name_or_type)
-      name_or_type.is_a?(Hash) ? name_or_type : { name: name_or_type, type: name_or_type}
-    end
-
     # Used by PartiallyOrderedList to implement the before: and after: options
     def order_middleware(mw_1, mw_2)
       case
@@ -113,12 +122,6 @@ module Farscape
       when includes_middleware?(mw_2[:after],mw_1)
         -1
       end
-    end
-
-    def find_attr_intersect(master_hash, selector_hash)
-      master_hash.map do |mkey, mval|
-        selector_hash.map { |skey, sval| mkey if mval[skey] == sval }
-      end.flatten.compact
     end
 
     # Search a list for a given middleware by either its class or the type of its originating plugin
