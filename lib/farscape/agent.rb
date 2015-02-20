@@ -7,11 +7,13 @@ module Farscape
 
     attr_reader :media_type
     attr_reader :entry_point
+    attr_reader :local_plugins
 
-    def initialize(entry = nil, media = :hale, safe = false)
+    def initialize(entry = nil, media = :hale, safe = false, local_plugins = {})
       @entry_point = entry
       @media_type = media
       @safe_mode = safe
+      @local_plugins = local_plugins
     end
 
     def representor
@@ -43,7 +45,7 @@ module Farscape
     end
 
     def client
-      Farscape.clients[PROTOCOL].new
+      Farscape.clients[PROTOCOL].new(self)
     end
 
     def safe
@@ -56,6 +58,16 @@ module Farscape
 
     def safe?
       @safe_mode
+    end
+
+    def using(name_or_type)
+      names = Farscape.find_attr_intersect(Farscape.plugins, Farscape.normalize_selector(name_or_type))
+      local_plugins = names.reduce(@local_plugins) { |h, k| h.merge({ k => Farscape.plugins[k] }) }
+      self.class.new(@entry_point, @media, @safe_mode, local_plugins)
+    end
+    
+    def middleware_stack
+      Farscape.middleware_stack(@local_plugins)
     end
 
   end
