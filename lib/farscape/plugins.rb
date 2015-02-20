@@ -4,6 +4,7 @@ module Farscape
 
   @plugins = {}
   @disabling_rules = []
+  @_middleware_stack = nil
 
   class <<self
 
@@ -11,6 +12,7 @@ module Farscape
     attr_reader :disabling_rules
 
     def register_plugin(options)
+      @_middleware_stack = nil
       options[:enabled] = enabled?(options)
       @plugins[options[:name]] = options
     end
@@ -49,24 +51,42 @@ module Farscape
 
     # Prevents a plugin from being registered, and disables it if it's already there
     def disable!(name_or_type)
+      @_middleware_stack = nil
       name_or_type = normalize_selector(name_or_type)
       @disabling_rules << name_or_type
-      selected_plugins = find_attr_intersect(@plugins, name_or_type)
-      selected_plugins.each { |plugin| @plugins[plugin][:enabled] = false }
+      set_plugin_states(name_or_type, false)
     end
 
     # Allows a plugin to be registered, and enables it if it's already there
     def enable!(name_or_type)
+      @_middleware_stack = nil
       name_or_type = normalize_selector(name_or_type)
       @disabling_rules.delete(name_or_type)
-      selected_plugins = find_attr_intersect(@plugins, name_or_type)
-      selected_plugins.each { |plugin| @plugins[plugin][:enabled] = true }
+      set_plugin_states(name_or_type, true)
     end
 
     # Returns the Poset representing middleware dependency
     def middleware_stack
+      @_middleware_stack ? @_middleware_stack : construct_stack(enabled_plugins)
+    end
+    
+    # Removes all plugins and disablings of plugins
+    def clear
+      @plugins = {}
+      @disabling_rules = []
+      @_middleware_stack = nil
+    end
+
+    private
+
+    def set_plugin_states(name_or_type, condition)
+      selected_plugins = find_attr_intersect(@plugins, name_or_type)
+      selected_plugins.each { |plugin| @plugins[plugin][:enabled] = condition }
+    end
+
+    def construct_stack(plugins)
       stack = PartiallyOrderedList.new { |m,n| order_middleware(m,n) }
-      enabled_plugins.map do |_, plugin|
+      plugins.map do |_, plugin|
         [*plugin[:middleware]].map do |middleware|
           middleware = {class: middleware} unless middleware.is_a?(Hash)
           middleware[:type] = plugin[:type]
@@ -76,14 +96,6 @@ module Farscape
       end
       stack
     end
-    
-    # Removes all plugins and disablings of plugins
-    def clear
-      @plugins = {}
-      @disabling_rules = []
-    end
-
-    private
 
     def normalize_selector(name_or_type)
       name_or_type.is_a?(Hash) ? name_or_type : { name: name_or_type, type: name_or_type}
