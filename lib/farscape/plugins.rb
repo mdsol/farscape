@@ -86,8 +86,8 @@ module Farscape
 
     def construct_stack(plugins)
       stack = PartiallyOrderedList.new { |m,n| order_middleware(m,n) }
-      plugins.map do |_, plugin|
-        [*plugin[:middleware]].map do |middleware|
+      plugins.each do |_, plugin|
+        [*plugin[:middleware]].each do |middleware|
           middleware = {class: middleware} unless middleware.is_a?(Hash)
           middleware[:type] = plugin[:type]
           middleware[:plugin] = plugin[:name]
