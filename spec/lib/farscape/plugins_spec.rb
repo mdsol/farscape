@@ -121,8 +121,8 @@ describe Farscape do
       [:sebacean, TestMiddleware::SabotageDetector,'TestMiddleware::SabotageDetector',['TestMiddleware::SabotageDetector']].each do |form|
         it "honors the before: option in middleware when given as #{form.inspect}" do
           saboteur_middleware = {class: TestMiddleware::Saboteur, before: form}
-          saboteur_plugin = {name: :saboteur, type: :scarran, middleware: [saboteur_middleware]}
-          detector_plugin = {name: :detector, type: :sebacean, middleware: [TestMiddleware::SabotageDetector]}
+          saboteur_plugin = {name: :Saboteur, type: :scarran, middleware: [saboteur_middleware]}
+          detector_plugin = {name: :Detector, type: :sebacean, middleware: [TestMiddleware::SabotageDetector]}
           [saboteur_plugin, detector_plugin].shuffle.each { |plugin| Farscape.register_plugin(plugin) }
           
           expect(Farscape.middleware_stack.map{ |m| m[:class] }).to eq( [TestMiddleware::Saboteur, TestMiddleware::SabotageDetector] )
@@ -133,8 +133,8 @@ describe Farscape do
       [:sebacean, TestMiddleware::SabotageDetector,'TestMiddleware::SabotageDetector',['TestMiddleware::SabotageDetector']].each do |form|
         it "honors the after: option in middleware when given as #{form.inspect}" do
           saboteur_middleware = {class: TestMiddleware::Saboteur, after: form}
-          saboteur_plugin = {name: :saboteur, type: :scarran, middleware: [saboteur_middleware]}
-          detector_plugin = {name: :detector, type: :sebacean, middleware: [TestMiddleware::SabotageDetector]}
+          saboteur_plugin = {name: :Saboteur, type: :scarran, middleware: [saboteur_middleware]}
+          detector_plugin = {name: :Detector, type: :sebacean, middleware: [TestMiddleware::SabotageDetector]}
           [saboteur_plugin, detector_plugin].shuffle.each { |plugin| Farscape.register_plugin(plugin) }
           
           expect(Farscape.middleware_stack.map{ |m| m[:class] }).to eq( [TestMiddleware::SabotageDetector, TestMiddleware::Saboteur] )
@@ -143,13 +143,13 @@ describe Farscape do
       end
       
       it 'doesn\'t disable everything with one' do
-        detector_plugin = {name: :detector, type: :sebacean, middleware: [TestMiddleware::SabotageDetector], default_state: :disabled}
+        detector_plugin = {name: :Detector, type: :sebacean, middleware: [TestMiddleware::SabotageDetector], default_state: :disabled}
         saboteur_middleware = {class: TestMiddleware::Saboteur}
-        saboteur_plugin = {name: :saboteur, type: :scarran, middleware: [saboteur_middleware]}
+        saboteur_plugin = {name: :Saboteur, type: :scarran, middleware: [saboteur_middleware]}
         Farscape.register_plugin(detector_plugin)
         Farscape.register_plugin(saboteur_plugin)
         
-        expect(Farscape.enabled_plugins.keys).to eq([:saboteur])
+        expect(Farscape.enabled_plugins.keys).to eq([:Saboteur])
       end
 
     end
