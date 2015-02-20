@@ -138,8 +138,8 @@ module Peacekeeper
     raise if representor.transitions.keys.include?(:attack)
   end
 end
-Farscape.register_plugin(name: :peacekeeper, type: :security, extensions: [Peacekeeper], extends: [:Agent])
-agent.enter(url).using(:peacekeeper).pacify!
+Farscape.register_plugin(name: :Peacekeeper, type: :security, extensions: [Peacekeeper], extends: [:Agent])
+agent.enter(url).using(:Peacekeeper).pacify!
 ```
 
 # Farscape Utilities
