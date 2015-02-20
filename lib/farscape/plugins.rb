@@ -12,7 +12,7 @@ module Farscape
     attr_reader :disabling_rules
 
     def register_plugin(options)
-      @_middleware_stack = nil
+      @middleware_stack = nil
       options[:enabled] = enabled?(options)
       @plugins[options[:name]] = options
     end
@@ -51,7 +51,7 @@ module Farscape
 
     # Prevents a plugin from being registered, and disables it if it's already there
     def disable!(name_or_type)
-      @_middleware_stack = nil
+      @middleware_stack = nil
       name_or_type = normalize_selector(name_or_type)
       @disabling_rules << name_or_type
       set_plugin_states(name_or_type, false)
@@ -59,7 +59,7 @@ module Farscape
 
     # Allows a plugin to be registered, and enables it if it's already there
     def enable!(name_or_type)
-      @_middleware_stack = nil
+      @middleware_stack = nil
       name_or_type = normalize_selector(name_or_type)
       @disabling_rules.delete(name_or_type)
       set_plugin_states(name_or_type, true)
@@ -67,14 +67,14 @@ module Farscape
 
     # Returns the Poset representing middleware dependency
     def middleware_stack
-      @_middleware_stack ? @_middleware_stack : construct_stack(enabled_plugins)
+      @middleware_stack ||= construct_stack(enabled_plugins)
     end
     
     # Removes all plugins and disablings of plugins
     def clear
       @plugins = {}
       @disabling_rules = []
-      @_middleware_stack = nil
+      @middleware_stack = nil
     end
 
     private
