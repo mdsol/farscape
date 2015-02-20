@@ -152,6 +152,18 @@ describe Farscape do
         expect(Farscape.enabled_plugins.keys).to eq([:Saboteur])
       end
 
+      it 'doesn\'t allow sneaky enabling' do
+        detector_plugin = {name: :Detector, type: :sebacean, middleware: [TestMiddleware::SabotageDetector], default_state: :disabled}
+        Farscape.register_plugin(detector_plugin)
+        
+        expect(Farscape.disabled_plugins.keys).to eq([:Detector])
+        
+        detector_plugin = {name: :Detector, type: :sebacean, middleware: [TestMiddleware::SabotageDetector], default_state: :enabled}
+        Farscape.register_plugin(detector_plugin)
+        
+        expect(Farscape.disabled_plugins.keys).to eq([:Detector])
+      end
+
     end
 
     context 'workflow' do
