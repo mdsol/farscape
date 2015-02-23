@@ -43,7 +43,7 @@ describe Farscape::Agent do
   
   let(:entry_point) { "http://localhost:#{RAILS_PORT}"}
   
-  it 'acc' do
+  it 'accepts a using directive that enables plugins' do
     detector_plugin = {name: :Detector, type: :sebacean, middleware: [TestMiddleware::SabotageDetector], default_state: :disabled}
     saboteur_middleware = {class: TestMiddleware::Saboteur, before: :sebacean}
     saboteur_plugin = {name: :Saboteur, type: :scarran, middleware: [saboteur_middleware]}
@@ -51,6 +51,18 @@ describe Farscape::Agent do
     Farscape.register_plugin(saboteur_plugin)
     
     expect { Farscape::Agent.new(entry_point).using(:Detector).enter }.to raise_error('Sabotage detected')
+  end
+
+  it 'using does not modify Farscape' do
+    detector_plugin = {name: :Detector, type: :sebacean, middleware: [TestMiddleware::SabotageDetector], default_state: :disabled}
+    saboteur_middleware = {class: TestMiddleware::Saboteur, before: :sebacean}
+    saboteur_plugin = {name: :Saboteur, type: :scarran, middleware: [saboteur_middleware]}
+    Farscape.register_plugin(detector_plugin)
+    Farscape.register_plugin(saboteur_plugin)
+    
+    agent = Farscape::Agent.new(entry_point).using(:Detector)
+    expect(agent.enabled_plugins[:Detector]).to_not be_nil
+    expect(Farscape.disabled_plugins[:Detector]).to_not be_nil
   end
   
 end
