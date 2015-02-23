@@ -37,6 +37,25 @@ module TestMiddleware
 
 end
 
+describe Farscape::Agent do
+  before(:each) { Farscape.clear }
+  after(:all) { Farscape.clear }
+  
+  let(:entry_point) { "http://localhost:#{RAILS_PORT}"}
+  
+  it 'acc' do
+    detector_plugin = {name: :Detector, type: :sebacean, middleware: [TestMiddleware::SabotageDetector], default_state: :disabled}
+    saboteur_middleware = {class: TestMiddleware::Saboteur, before: :sebacean}
+    saboteur_plugin = {name: :Saboteur, type: :scarran, middleware: [saboteur_middleware]}
+    Farscape.register_plugin(detector_plugin)
+    Farscape.register_plugin(saboteur_plugin)
+    
+    expect { Farscape::Agent.new(entry_point).using(:Detector).enter }.to raise_error('Sabotage detected')
+  end
+  
+end
+
+
 describe Farscape do
   after(:all) { Farscape.clear }  
   

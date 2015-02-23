@@ -7,11 +7,12 @@ module Farscape
 
     attr_reader :media_type
     attr_reader :entry_point
-
-    def initialize(entry = nil, media = :hale, safe = false)
+    
+    def initialize(entry = nil, media = :hale, safe = false, pluginhash = {})
       @entry_point = entry
       @media_type = media
       @safe_mode = safe
+      @pluginhash = pluginhash.empty? ? default_plugin_hash : pluginhash
     end
 
     def representor
@@ -43,20 +44,48 @@ module Farscape
     end
 
     def client
-      Farscape.clients[PROTOCOL].new
+      Farscape.clients[PROTOCOL].new(self)
     end
 
     def safe
-      self.class.new(@entry_point, @media_type, true)
+      self.class.new(@entry_point, @media_type, true, @pluginhash)
     end
 
     def unsafe
-      self.class.new(@entry_point, @media_type, false)
+      self.class.new(@entry_point, @media_type, false, @pluginhash)
     end
 
     def safe?
       @safe_mode
     end
 
+    def enabled_plugins
+      Plugins.enabled_plugins(@pluginhash[:plugins])
+    end
+
+    def middleware_stack
+      @pluginhash[:middleware_stack] ||= Plugins.construct_stack(enabled_plugins)
+    end
+
+    def using(name_or_type)
+      disabling_rules, plugins = Plugins.enable(name_or_type, @pluginhash[:disabling_rules], @pluginhash[:plugins])
+      plugin_hash = {
+        disabling_rules: disabling_rules,
+        plugins: plugins,
+        middleware_stack: nil
+      }
+      self.class.new(@entry_point, @media_type, @safe_mode, plugin_hash)
+    end
+
+    private
+    
+    def default_plugin_hash
+      {
+        plugins: Farscape.plugins.dup,
+        disabling_rules: Farscape.disabling_rules.dup,
+        middleware_stack: nil
+      }
+    end
+    
   end
 end
