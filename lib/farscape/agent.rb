@@ -81,11 +81,11 @@ module Farscape
     
     def default_plugin_hash
       {
-        plugins: Farscape.plugins.dup,
-        disabling_rules: Farscape.disabling_rules.dup,
+        plugins: Farscape.plugins.dup,  # A hash of plugins keyed by the plugin name
+        disabling_rules: Farscape.disabling_rules.dup, # A list of symbols that are Names or types of plugins
         middleware_stack: nil
       }
     end
-    
+
   end
 end

@@ -7,8 +7,8 @@ module Farscape
     attr_reader :plugins
     attr_reader :disabling_rules
 
-    @plugins = {}
-    @disabling_rules = []
+    @plugins = {} # A hash of plugins keyed by the plugin name
+    @disabling_rules = [] # A list of symbols that are Names or types of plugins
     @middleware_stack = nil
     
     def self.plugins
