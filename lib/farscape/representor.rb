@@ -16,6 +16,14 @@ module Farscape
       @requested_media_type = requested_media_type
       @representor = deserialize(requested_media_type, response.body)
     end
+    
+    %w(using omitting).each do |meth|
+      define_method(meth) { |name_or_type| self.class.new(@requested_media_type, @response, @agent.send(meth, name_or_type)) }
+    end
+
+    %w(disabled_plugins enabled_plugins plugins).each do |meth|
+      define_method(meth) { @agent.send(meth) }
+    end
 
     def attributes
       representor.properties
@@ -65,12 +73,6 @@ module Farscape
     def method_missing(method, *args, &block)
       super
     rescue NoMethodError => e
-      if [:omitting, :using].include?(method)
-        return self.class.new(@requested_media_type, @response, @agent.send(method, *args, &block))
-      end
-      if [:disabled_plugins, :enabled_plugins, :plugins].include?(method)
-        return @agent.send(method, *args, &block)
-      end
       parameters = args.first || {}
       get_embedded(method) || get_transition(method, parameters, &block) || get_attribute(method) || raise
     end

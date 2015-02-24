@@ -28,13 +28,16 @@ module Farscape
       @agent.find_exception(response)
     end
 
+    %w(using omitting).each do |meth|
+      define_method(meth) { |name_or_type| self.class.new(@transition, @agent.send(meth, name_or_type)) }
+    end
+
+    %w(disabled_plugins enabled_plugins plugins).each do |meth|
+      define_method(meth) { @agent.send(meth) }
+    end
+
+
     def method_missing(meth, *args, &block)
-      if [:omitting, :using].include?(meth)
-        return self.class.new(@transition, @agent.send(meth, *args, &block))
-      end
-      if [:disabled_plugins, :enabled_plugins, :plugins].include?(meth)
-        return @agent.send(meth, *args, &block)
-      end
       @transition.send(meth, *args, &block)
     end
 
