@@ -1,5 +1,6 @@
 require 'representors'
 require 'ostruct'
+require 'active_support/core_ext/object/blank'
 
 module Farscape
 
@@ -28,6 +29,12 @@ module Farscape
     end
 
     def method_missing(meth, *args, &block)
+      if [:omitting, :using].include?(meth)
+        return self.class.new(@transition, @agent.send(meth, *args, &block))
+      end
+      if [:disabled_plugins, :enabled_plugins, :plugins].include?(meth)
+        return @agent.send(meth, *args, &block)
+      end
       @transition.send(meth, *args, &block)
     end
 

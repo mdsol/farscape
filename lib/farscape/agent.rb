@@ -59,8 +59,16 @@ module Farscape
       @safe_mode
     end
 
+    def plugins
+      @plugin_hash[:plugins]
+    end
+
     def enabled_plugins
       Plugins.enabled_plugins(@plugin_hash[:plugins])
+    end
+
+    def disabled_plugins
+      Plugins.disabled_plugins(@plugin_hash[:plugins])
     end
 
     def middleware_stack
@@ -69,6 +77,16 @@ module Farscape
 
     def using(name_or_type)
       disabling_rules, plugins = Plugins.enable(name_or_type, @plugin_hash[:disabling_rules], @plugin_hash[:plugins])
+      plugin_hash = {
+        disabling_rules: disabling_rules,
+        plugins: plugins,
+        middleware_stack: nil
+      }
+      self.class.new(@entry_point, @media_type, @safe_mode, plugin_hash)
+    end
+
+    def omitting(name_or_type)
+      disabling_rules, plugins = Plugins.disable(name_or_type, @plugin_hash[:disabling_rules], @plugin_hash[:plugins])
       plugin_hash = {
         disabling_rules: disabling_rules,
         plugins: plugins,

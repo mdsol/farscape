@@ -65,6 +65,12 @@ module Farscape
     def method_missing(method, *args, &block)
       super
     rescue NoMethodError => e
+      if [:omitting, :using].include?(method)
+        return self.class.new(@requested_media_type, @response, @agent.send(method, *args, &block))
+      end
+      if [:disabled_plugins, :enabled_plugins, :plugins].include?(method)
+        return @agent.send(method, *args, &block)
+      end
       parameters = args.first || {}
       get_embedded(method) || get_transition(method, parameters, &block) || get_attribute(method) || raise
     end
@@ -73,7 +79,7 @@ module Farscape
       super || [embedded.include?(method_name), method_transitions.include?(method), attributes.include?(method)].any?
     end
 
-    # HACK! - Requires for method_missing; apparently a undocumented feature of Ruby
+    # HACK! - Requires for method_missing; apparently an undocumented feature of Ruby
     def to_ary
     end
 
