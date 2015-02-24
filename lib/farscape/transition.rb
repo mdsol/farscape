@@ -1,5 +1,6 @@
 require 'representors'
 require 'ostruct'
+require 'active_support/core_ext/object/blank'
 
 module Farscape
 
@@ -26,6 +27,15 @@ module Farscape
 
       @agent.find_exception(response)
     end
+
+    %w(using omitting).each do |meth|
+      define_method(meth) { |name_or_type| self.class.new(@transition, @agent.send(meth, name_or_type)) }
+    end
+
+    %w(disabled_plugins enabled_plugins plugins).each do |meth|
+      define_method(meth) { @agent.send(meth) }
+    end
+
 
     def method_missing(meth, *args, &block)
       @transition.send(meth, *args, &block)

@@ -16,6 +16,14 @@ module Farscape
       @requested_media_type = requested_media_type
       @representor = deserialize(requested_media_type, response.body)
     end
+    
+    %w(using omitting).each do |meth|
+      define_method(meth) { |name_or_type| self.class.new(@requested_media_type, @response, @agent.send(meth, name_or_type)) }
+    end
+
+    %w(disabled_plugins enabled_plugins plugins).each do |meth|
+      define_method(meth) { @agent.send(meth) }
+    end
 
     def attributes
       representor.properties
@@ -73,7 +81,7 @@ module Farscape
       super || [embedded.include?(method_name), method_transitions.include?(method), attributes.include?(method)].any?
     end
 
-    # HACK! - Requires for method_missing; apparently a undocumented feature of Ruby
+    # HACK! - Requires for method_missing; apparently an undocumented feature of Ruby
     def to_ary
     end
 
