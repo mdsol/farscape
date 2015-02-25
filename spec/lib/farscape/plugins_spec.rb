@@ -258,7 +258,7 @@ describe Farscape do
         expect(Farscape::Agent.new.enter(entry_point).omitting(:Peacekeeper).transitions.keys).to include("drds")
       end
       
-      it 'allows deiscovery extensions' do
+      it 'allows discovery extensions' do
         module ServiceCatalogue
           def self.extended(base)
             base.instance_eval do
