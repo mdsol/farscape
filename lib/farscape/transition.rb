@@ -9,6 +9,7 @@ module Farscape
     def initialize(transition, agent)
       @agent = agent
       @transition = transition
+      handle_extensions
     end
 
     def invoke(args={})
@@ -26,6 +27,12 @@ module Farscape
       response = @agent.client.invoke(call_options)
 
       @agent.find_exception(response)
+    end
+
+    def handle_extensions
+      extensions = Plugins.extensions(enabled_plugins)
+      extensions = extensions[self.class.to_s.split(':')[-1].to_sym]
+      extensions.map { |cls| self.extend(cls) } if extensions
     end
 
     %w(using omitting).each do |meth|

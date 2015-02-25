@@ -137,7 +137,8 @@ describe Farscape do
     context 'adding middleware' do
       
       before(:each) { Farscape.clear }
-
+      after(:all) { Farscape.clear }
+      
       it 'can add middleware' do
         plugin = {name: :Peacekeeper, type: :sebacean, middleware: [TestMiddleware::NoGetNoProblem]}
         Farscape.register_plugin(plugin)
@@ -221,6 +222,64 @@ describe Farscape do
         expect(Farscape.disabled_plugins.keys).to eq([:Detector])
       end
 
+    end
+
+    context 'extensions' do
+      before(:each) { Farscape.clear }
+      after(:all) { Farscape.clear }
+        
+      let(:entry_point) { "http://localhost:#{RAILS_PORT}"}
+      let(:can_do_hash) { {conditions: 'can_do_anything'} }
+      
+      it 'allows extensions' do
+        module Peacekeeper
+          def pacify!
+            raise 'none shall pass' if enabled_plugins.include?(:Peacekeeper)
+          end
+        end
+        Farscape.register_plugin(name: :Peacekeeper, type: :security, extensions: {Agent: [Peacekeeper]})
+        expect { Farscape::Agent.new.pacify! }.to raise_error('none shall pass')
+      end
+      
+      it 'allows extensions with altering existing methods' do
+        module Peacekeeper
+          def self.extended(base)
+            base.instance_eval do
+              @original_transitions = method(:transitions)
+              def transitions
+                raise 'none shall pass' if @original_transitions.call.keys.include?("drds")
+                @original_transitions.call
+              end
+            end
+          end
+        end
+        Farscape.register_plugin(name: :Peacekeeper, type: :security, extensions: {RepresentorAgent: [Peacekeeper]})
+        expect { Farscape::Agent.new.enter(entry_point).transitions.keys }.to raise_error('none shall pass')
+        expect(Farscape::Agent.new.enter(entry_point).omitting(:Peacekeeper).transitions.keys).to include("drds")
+      end
+      
+      it 'allows deiscovery extensions' do
+        module ServiceCatalogue
+          def self.extended(base)
+            base.instance_eval do
+              @original_enter = method(:enter)
+              @dispatches = {
+                :moya => "http://localhost:#{RAILS_PORT}"
+              }
+              def enter(entry=nil)
+                @entry_point ||= entry
+                @entry_point = @dispatches[@entry_point] || @entry_point
+                @original_enter.call
+              end
+            end            
+          end
+        end
+        Farscape.register_plugin(name: :Wormlet, type: :discovery, extensions: {Agent: [ServiceCatalogue]})
+        expect(Farscape::Agent.new(:moya).enter.transitions.keys).to include("drds")
+        expect(Farscape::Agent.new.enter(:moya).transitions.keys).to include("drds")
+        expect { Farscape::Agent.new.omitting(:discovery).enter(:moya).transitions.keys }.to raise_error(NoMethodError)
+      end
+      
     end
 
     context 'workflow' do

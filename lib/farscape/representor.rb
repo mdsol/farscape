@@ -15,6 +15,13 @@ module Farscape
       @response = response
       @requested_media_type = requested_media_type
       @representor = deserialize(requested_media_type, response.body)
+      handle_extensions
+    end
+
+    def handle_extensions
+      extensions = Plugins.extensions(enabled_plugins)
+      extensions = extensions[self.class.to_s.split(':')[-1].to_sym]
+      extensions.map { |cls| self.extend(cls) } if extensions
     end
     
     %w(using omitting).each do |meth|

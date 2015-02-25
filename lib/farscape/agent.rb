@@ -13,6 +13,13 @@ module Farscape
       @media_type = media
       @safe_mode = safe
       @plugin_hash = plugin_hash.empty? ? default_plugin_hash : plugin_hash
+      handle_extensions
+    end
+
+    def handle_extensions
+      extensions = Plugins.extensions(enabled_plugins)
+      extensions = extensions[self.class.to_s.split(':')[-1].to_sym]
+      extensions.map { |cls| self.extend(cls) } if extensions
     end
 
     def representor

@@ -91,5 +91,14 @@ module Farscape
       list.map(&:to_s).include?(middleware[:class].to_s) || list.include?(middleware[:type])
     end
 
+    def self.extensions(plugins)
+      plugs = plugins.map { |_, hash| hash[:extensions] }.compact
+      collect_values(plugs)
+    end
+
+    def self.collect_values(hashes)
+      hashes.reduce({}) { |h1, h2| h1.merge(h2) { |k, l1, l2| l1+l2 } }
+    end
+
   end
 end
