@@ -242,7 +242,7 @@ describe Farscape do
       end
       
       it 'allows extensions with altering existing methods' do
-        module Peacekeeper
+        module Peacemaker
           def self.extended(base)
             base.instance_eval do
               @original_transitions = method(:transitions)
@@ -253,7 +253,7 @@ describe Farscape do
             end
           end
         end
-        Farscape.register_plugin(name: :Peacekeeper, type: :security, extensions: {RepresentorAgent: [Peacekeeper]})
+        Farscape.register_plugin(name: :Peacekeeper, type: :security, extensions: {RepresentorAgent: [Peacemaker]})
         expect { Farscape::Agent.new.enter(entry_point).transitions.keys }.to raise_error('none shall pass')
         expect(Farscape::Agent.new.enter(entry_point).omitting(:Peacekeeper).transitions.keys).to include("drds")
       end
