@@ -6,6 +6,8 @@ module Farscape
 
   class TransitionAgent
 
+    include BaseAgent
+
     def initialize(transition, agent)
       @agent = agent
       @transition = transition
@@ -29,20 +31,9 @@ module Farscape
       @agent.find_exception(response)
     end
 
-    def handle_extensions
-      extensions = Plugins.extensions(enabled_plugins)
-      extensions = extensions[self.class.to_s.split(':')[-1].to_sym]
-      extensions.map { |cls| self.extend(cls) } if extensions
-    end
-
     %w(using omitting).each do |meth|
       define_method(meth) { |name_or_type| self.class.new(@transition, @agent.send(meth, name_or_type)) }
     end
-
-    %w(disabled_plugins enabled_plugins plugins).each do |meth|
-      define_method(meth) { @agent.send(meth) }
-    end
-
 
     def method_missing(meth, *args, &block)
       @transition.send(meth, *args, &block)
