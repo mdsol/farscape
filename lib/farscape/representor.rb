@@ -4,6 +4,9 @@ require 'ostruct'
 
 module Farscape
   class SafeRepresentorAgent
+    
+    include BaseAgent
+    
     attr_reader :agent
     attr_reader :representor
     attr_reader :response
@@ -15,14 +18,11 @@ module Farscape
       @response = response
       @requested_media_type = requested_media_type
       @representor = deserialize(requested_media_type, response.body)
+      handle_extensions
     end
     
     %w(using omitting).each do |meth|
       define_method(meth) { |name_or_type| self.class.new(@requested_media_type, @response, @agent.send(meth, name_or_type)) }
-    end
-
-    %w(disabled_plugins enabled_plugins plugins).each do |meth|
-      define_method(meth) { @agent.send(meth) }
     end
 
     def attributes

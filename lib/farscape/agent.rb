@@ -3,6 +3,9 @@ require 'farscape/clients'
 
 module Farscape
   class Agent
+    
+    include BaseAgent
+    
     PROTOCOL = :http
 
     attr_reader :media_type
@@ -13,6 +16,7 @@ module Farscape
       @media_type = media
       @safe_mode = safe
       @plugin_hash = plugin_hash.empty? ? default_plugin_hash : plugin_hash
+      handle_extensions
     end
 
     def representor

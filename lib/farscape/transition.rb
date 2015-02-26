@@ -6,9 +6,12 @@ module Farscape
 
   class TransitionAgent
 
+    include BaseAgent
+
     def initialize(transition, agent)
       @agent = agent
       @transition = transition
+      handle_extensions
     end
 
     def invoke(args={})
@@ -31,11 +34,6 @@ module Farscape
     %w(using omitting).each do |meth|
       define_method(meth) { |name_or_type| self.class.new(@transition, @agent.send(meth, name_or_type)) }
     end
-
-    %w(disabled_plugins enabled_plugins plugins).each do |meth|
-      define_method(meth) { @agent.send(meth) }
-    end
-
 
     def method_missing(meth, *args, &block)
       @transition.send(meth, *args, &block)
