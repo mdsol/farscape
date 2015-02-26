@@ -234,7 +234,7 @@ describe Farscape do
       it 'allows extensions' do
         module Peacekeeper
           def pacify!
-            raise 'none shall pass' if enabled_plugins.include?(:Peacekeeper)
+            raise 'none shall pass' unless enabled_plugins.include?(:Saboteur)
           end
         end
         Farscape.register_plugin(name: :Peacekeeper, type: :security, extensions: {Agent: [Peacekeeper]})
