@@ -1,21 +1,21 @@
+RAILS_PORT = 1234
 SPEC_DIR = File.expand_path("..", __FILE__)
 lib_dir = File.expand_path("../lib", SPEC_DIR)
+
 
 $LOAD_PATH.unshift(lib_dir)
 $LOAD_PATH.uniq!
 
 require 'rspec'
-require 'debugger'
+require 'pry'
 require 'bundler'
-require 'webmock/rspec'
 require 'simplecov'
+require 'moya'
 
 SimpleCov.start
-Debugger.start
 Bundler.setup
 
 require 'farscape'
-
 Dir["#{SPEC_DIR}/support/*.rb"].each { |f| require f }
 
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
@@ -31,5 +31,16 @@ RSpec.configure do |config|
   config.order = 'random' unless ENV['RANDOMIZE'] == 'false'
 
   config.include Support::Helpers
-  config.include Support::DiceBagHelpers
+
+  config.before(:suite) do
+    old_handler = trap(:INT) {
+      Process.kill(:INT, $moya_rails_pid) if $moya_rails_pid
+      old_handler.call if old_handler.respond_to?(:call)
+    }
+    $moya_rails_pid = Moya.spawn_rails_process!(RAILS_PORT)
+  end
+
+  config.after(:suite) do
+    Process.kill(:INT, $moya_rails_pid)
+  end
 end

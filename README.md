@@ -25,18 +25,11 @@ agent = Farscape::Agent.new('http://example.com/my_api')
 resources = agent.enter
 resources.attributes # => { meta: 'data', or: 'other data' }
 resources.transitions.keys # => ['http://example.com/rel/drds', 'http://example.com/rel/leviathans']
-
-# Alternate
-agent = Farscape::Agent.new
-
-resources = agent.enter('http://example.com/my_api')
-resources.attributes # => { meta: 'data', or: 'other data' }
-resources.transitions.keys # => ['http://example.com/rel/drds', 'http://example.com/rel/leviathans']
 ```
 
 ### A Hypermedia Discovery Service
 For interacting with a discovery service, Farscape supports follow your nose entry to select a registered resource
-or immediately loading a discoverable resource if known to be regsitered in the service a priori. 
+or immediately loading a discoverable resource if known to be registered in the service *a priori*.
 
 ```ruby
 agent = Farscape::Agent.new('http://example.com/my_discovery_service')
@@ -50,15 +43,10 @@ drds.attributes # => { total_count: 25, items: [...] }
 drds.transitions.keys # => ['self', 'search', 'create', 'next', 'last']
 
 agent.enter('http://example.com/rel/unknown_resource') # => raises Farscape::Agent::UnknownEntryPoint
-
-# For Services (and APIs) that support application/json-home
-drds = agent.enter(:drds)
-drds.attributes # => { total_count: 25, items: [...] }
-drds.transitions.keys # => ['self', 'search', 'create', 'next', 'last']
 ```
 
 ## API Interaction
-Entering an API takes you into it's application state-machine and, as such, the interface for interacting with that 
+Entering an API takes you into its application state-machine and, as such, the interface for interacting with that 
 application state is brain dead simple with Farscape. You have data that you read and hypermedia affordances that tell 
 you what you can do next and you can invoke those affordances to do things. That's it.
 
@@ -81,6 +69,10 @@ self_transition = drds.transitions['self']
 reloaded_drds = self_transition.invoke
 ```
 
+### Explore
+
+The sample code given below often depicts the client making *assumptions* that a specific transition or attribute will be available in a certain state. *This is unsafe*, and production code should include conditionals or rescues for the case when an assumption proves incorrect. Whenever possible, Farscape should be used more dynamically, by letting user interaction or a crawling algorithm drive transitions.
+
 ### Apply query parameters
 ```ruby
 search_transition = drds.transitions['search']
@@ -89,6 +81,11 @@ search_transition.parameters # => ['search_term']
 filtered_drds = search_transition.invoke do |builder|
   builder.parameters = { search_term: '1812' }
 end
+```
+
+You may also invoke transitions with automatic attribute and parameter matching
+```ruby
+drds.transitions['search'].invoke(search_term: '1812')
 ```
 
 ### Transform resource state
@@ -105,7 +102,7 @@ deactivated_drd = deactivate_transition.invoke
 deactivated_drd.attributes # => { name: '1812' }
 deactivated_drd.transitions # => ['self', 'activate', 'leviathan']
 
-deactivate_transition.invoke # => raise Farscape::Agent::Gone error
+deactivate_transition.invoke # => raise Farscape::Excpetions::Gone error
 ```
 
 ### Transform application state
@@ -128,29 +125,57 @@ new_drd = create_transition.invoke do |builder|
 end
 
 new_drd.attributes # => { name: 'Pike' }
-new_drd.transitions # => ['self', 'edit', 'delete', 'deactivate', 'leviathan']
+new_drd.transitions.keys # => ['self', 'edit', 'delete', 'deactivate', 'leviathan']
 ```
 
 For more examples and information on using Faraday with media-types that require specifying uniform-interface methods 
 and other protocol idioms when invoking transitions, see [Using Farscape]().
 
-## Bookmarks
-Following you nose is great, but if you have been there and you want to get back quickly, bookmarks are sweet 
-(particularly since Farscape can cache prior requests using rack middleware). A bookmark is simple hash that allows 
-easily reloading a prior state of a resources (of course things may have changed since you were there so you must 
-temper your assumptions).
+## Alternate Interface
+
+For developers more used to ActiveRecord syntax, Farscape resources also expose all transitions and attributes as Ruby methods. Safe (i.e. read) transitions are exposed verbatim.
 
 ```ruby
-drds = agent.enter(:drds)
-
-self_transition = drds.transitions['self']
-drds_bookmark = self_transition.bookmark
-
-drds = agent.invoke(bookmark: drds_bookmark)
+drd.leviathan # => Equivalent to drd.transitions['leviathan'].invoke
 ```
 
-With bookmarks, you can decorate links in UI applications to make it simple to enter state on the backend when 
-interacting with the UI links and forms.
+Unsafe transitions have an exclamation point at the end.
+
+```ruby
+drd.deactivate # => Raises NoMethodError
+
+drd.deactivate! # => Equivalent to drd = drd.transitions['deactivate'].invoke
+```
+
+Request parameters can be passed as a hash or as a block.
+
+```ruby
+# The following are all equivalent:
+
+drd = drds.create!(name: 'Pike')
+drd = drds.create! { |builder| builder.attributes = {name: 'Pike'} }
+drd = drds.transitions['create'].invoke{ |d| d.attributes = {name: 'Pike'} }
+```
+
+Attributes are read-only.
+
+```ruby
+drd.name # => "Pike"
+
+drd.name = 'Susan' # => Raises NoMethodError
+```
+
+If an attribute or transition's name conflicts with an existing method or reserved word, it will not be methodized and must be accessed through the hash interface.
+
+### Disabling the Alternate Interface
+If you're concerned about namespace collisions, or want to ensure that your code is highly flexible and explicit (albeit verbose), you may turn off the interface with the .safe method.
+```ruby
+safe_drd = drd.safe # => returns a drd resource without the alternate interface
+safe_drd.name # => UndefinedMethod error
+drd.name # => "Pike"
+```
+
+You may reenable the alternate interface with `.unsafe`.
 
 ## Contributing
 See [CONTRIBUTING][] for details.

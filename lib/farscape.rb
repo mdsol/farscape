@@ -1,6 +1,3 @@
-require 'active_support/all'
-require 'farscape/dice_bag/template'
+require 'plugins/plugins'
+require 'farscape/base_agent'
 require 'farscape/agent'
-require 'farscape/config_file'
-require 'farscape/simple_agent'
-require 'farscape/programming_api'

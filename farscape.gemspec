@@ -17,9 +17,12 @@ Gem::Specification.new do |s|
     Farscape is a library that simplifies consuming Hypermedia API responses.
   DESC
 
-  s.add_dependency('rake')
-  s.add_dependency('activesupport', '>= 3.2.0')
+  s.add_dependency 'dice_bag'
+  s.add_dependency 'rake'
   s.add_dependency('addressable',   '~> 2.3.0')
-  s.add_dependency('dice_bag',      '~> 0.7.0')
   s.add_dependency('faraday',       '~> 0.8.8')
+  s.add_dependency('activesupport', '>= 0')
+
+  s.add_development_dependency 'rspec'
+
 end

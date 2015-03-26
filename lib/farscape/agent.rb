@@ -1,60 +1,113 @@
-require 'farscape/agent/http_client'
-require 'farscape/agent/request'
+require 'farscape/representor'
+require 'farscape/clients'
 
 module Farscape
-  ##
-  # Agent used to make requests that wraps and delegates to configured clients specific to particular schemes.
   class Agent
+    
+    include BaseAgent
+    
+    PROTOCOL = :http
 
-    ##
-    # Invokes a request using a client configured for the resource URL scheme. Accepts a hash of request options,
-    # a Farscape::Agent::Request object, or yields a block or a combination thereof. The yielded request overrides
-    # values set directly as arguments.
-    #
-    # @example
-    #   agent = Farscape::Agent.new
-    #
-    #   # The following are equivalent
-    #   options = {
-    #     url: 'http://example.org',
-    #     method: 'POST',
-    #     params: {page: 1, per_page: 2},
-    #     headers: {'Content-Type' => 'application/json'},
-    #     body: {name: "Ka D'Argo"},
-    #     connection: double('faraday_connection'),
-    #     connection_options: {some: 'options'},
-    #     env_options: {add_to: 'rack_env'}
-    #   }
-    #   result = agent.invoke(options)
-    #
-    #   request = Faraday::Agent::Request.new(options)
-    #   result = agent.invoke(request)
-    #
-    #   result = agent.invoke do |request|
-    #     request.url 'http://example.org'
-    #     request.method = 'POST',
-    #     request.params = { page: 1, per_page: 2 },
-    #     request.headers = { 'Content-Type' => 'application/json' },
-    #     request.body = { name: "Ka D'Argo" },
-    #     request.connection = double( 'faraday_connection' ),
-    #     request.connection_options = { some: 'options' },
-    #     request.env_options = { add_to: 'rack_env' }
-    #   end
-    #
-    # @param [Hash, Farscape::Agent::Request] request The request object.
-    #
-    # @return [Farscape::Agent::Result] The encapsulated result.
-    def invoke(request = nil)
-      request = build_request(request)
-      client = HTTPClient.new
-      client.invoke(request)
+    attr_reader :media_type
+    attr_reader :entry_point
+    
+    def initialize(entry = nil, media = :hale, safe = false, plugin_hash = {})
+      @entry_point = entry
+      @media_type = media
+      @safe_mode = safe
+      @plugin_hash = plugin_hash.empty? ? default_plugin_hash : plugin_hash
+      handle_extensions
+    end
+
+    def representor
+      safe? ? SafeRepresentorAgent : RepresentorAgent
+    end
+
+    def enter(entry = entry_point)
+      @entry_point ||= entry
+      raise "No Entry Point Provided!" unless entry
+      response = client.invoke(url: entry, headers: get_accept_header(media_type))
+      find_exception(response)
+    end
+
+    def find_exception(response)
+      error = client.dispatch_error(response)
+      begin
+        representing = representor.new(media_type, response, self)
+      rescue JSON::ParserError
+        representing = response
+      end
+      raise error.new(representing) if error
+      representing
+    end
+
+    # TODO share this information with serialization factory base
+    def get_accept_header(media_type)
+      media_types = { hale: 'application/vnd.hale+json' }
+      { 'Accept' => media_types[media_type] }
+    end
+
+    def client
+      Farscape.clients[PROTOCOL].new(self)
+    end
+
+    def safe
+      self.class.new(@entry_point, @media_type, true, @plugin_hash)
+    end
+
+    def unsafe
+      self.class.new(@entry_point, @media_type, false, @plugin_hash)
+    end
+
+    def safe?
+      @safe_mode
+    end
+
+    def plugins
+      @plugin_hash[:plugins]
+    end
+
+    def enabled_plugins
+      Plugins.enabled_plugins(@plugin_hash[:plugins])
+    end
+
+    def disabled_plugins
+      Plugins.disabled_plugins(@plugin_hash[:plugins])
+    end
+
+    def middleware_stack
+      @plugin_hash[:middleware_stack] ||= Plugins.construct_stack(enabled_plugins)
+    end
+
+    def using(name_or_type)
+      disabling_rules, plugins = Plugins.enable(name_or_type, @plugin_hash[:disabling_rules], @plugin_hash[:plugins])
+      plugin_hash = {
+        disabling_rules: disabling_rules,
+        plugins: plugins,
+        middleware_stack: nil
+      }
+      self.class.new(@entry_point, @media_type, @safe_mode, plugin_hash)
+    end
+
+    def omitting(name_or_type)
+      disabling_rules, plugins = Plugins.disable(name_or_type, @plugin_hash[:disabling_rules], @plugin_hash[:plugins])
+      plugin_hash = {
+        disabling_rules: disabling_rules,
+        plugins: plugins,
+        middleware_stack: nil
+      }
+      self.class.new(@entry_point, @media_type, @safe_mode, plugin_hash)
     end
 
     private
-    def build_request(request)
-      Request.build_or_return(request)
+    
+    def default_plugin_hash
+      {
+        plugins: Farscape.plugins.dup,  # A hash of plugins keyed by the plugin name
+        disabling_rules: Farscape.disabling_rules.dup, # A list of symbols that are Names or types of plugins
+        middleware_stack: nil
+      }
     end
 
-    class UnregisteredClientError < StandardError; end
   end
 end
