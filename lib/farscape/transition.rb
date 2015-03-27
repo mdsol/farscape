@@ -20,7 +20,7 @@ module Farscape
       options = match_params(args, opts)
 
       call_options = {}
-      call_options[:url] = @transition.uri
+      call_options[:url] = @transition.uri(options.parameters)
       call_options[:method] = @transition.interface_method
       call_options[:headers] = @agent.get_accept_header(@agent.media_type).merge(options.headers || {})
       call_options[:params] = options.parameters unless options.parameters.blank?
