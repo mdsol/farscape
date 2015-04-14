@@ -7,7 +7,7 @@ gem 'rake',          '~> 0.9'
 gem 'awesome_print', '~> 1.1.0'
 gem 'redcarpet'
 
-gem 'representors', git: 'git@github.com:mdsol/representors.git', branch: '0-0-stable'
+gem 'representors', git: 'git@github.com:mdsol/representors.git', tag: 'v0.0.3'
 
 group :development, :test do
   gem 'pry'
