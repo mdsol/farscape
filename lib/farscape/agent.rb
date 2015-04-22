@@ -30,11 +30,12 @@ module Farscape
       find_exception(response)
     end
 
-    def find_exception(response)
+    def find_exception(response, entry_point='')
       error = client.dispatch_error(response)
       begin
         representing = representor.new(media_type, response, self)
       rescue JSON::ParserError
+        Rails.logger.error("Farscape could not parse the response #{response} when accessing #{entry_point}")
         representing = response
       end
       raise error.new(representing) if error
