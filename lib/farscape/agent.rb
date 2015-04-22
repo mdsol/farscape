@@ -27,7 +27,7 @@ module Farscape
       @entry_point ||= entry
       raise "No Entry Point Provided!" unless entry
       response = client.invoke(url: entry, headers: get_accept_header(media_type))
-      find_exception(response)
+      find_exception(response, entry_point)
     end
 
     def find_exception(response, entry_point='')
