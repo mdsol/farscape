@@ -10,7 +10,13 @@ module Farscape
       end
 
       def message
-        @representor.representor.to_hash
+        if @representor.respond_to?(:representor)
+          @representor.representor.to_hash
+        elsif @representor.respond_to?(:body) #Farscape will happily return a Faraday Response when it can not be parsed
+          @representor.body
+        else
+          "Unknown object #{@representor.class} retrieved as a representor: >>#{@representor.inspect}<<"
+        end
       end
 
       def error_description
