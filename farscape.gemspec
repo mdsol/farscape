@@ -3,7 +3,7 @@ require 'farscape/version'
 
 Gem::Specification.new do |s|
   s.name          = 'farscape'
-  s.version       = Farscape::VERSION::STRING
+  s.version       = Farscape::VERSION
   s.date          = Time.now.strftime('%Y-%m-%d')
   s.summary       = 'It shoots through wormholes and takes you to unknown places in the universe!'
   s.homepage      = 'https://github.com//farscape'
@@ -20,7 +20,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'dice_bag'
   s.add_dependency 'rake'
   s.add_dependency('addressable',   '~> 2.3.0')
-  s.add_dependency('faraday',       '~> 0.8.8')
+  s.add_dependency('faraday',       '~> 0.9')
   s.add_dependency('activesupport', '>= 0')
 
   s.add_development_dependency 'rspec'
