@@ -15,15 +15,17 @@ module Farscape
     end
 
     def invoke(args={})
-      opts=OpenStruct.new
-      yield opts if block_given?
-      options = match_params(args, opts)
+      #  opts=OpenStruct.new
+      #  yield opts if block_given?
+      #  options = match_params(args, opts)
+      options = OpenStruct.new
 
       call_options = {}
-      call_options[:url] = @transition.uri
+      call_options[:url] = @transition.uri(args)
       call_options[:method] = @transition.interface_method
       call_options[:headers] = @agent.get_accept_header(@agent.media_type).merge(options.headers || {})
-      call_options[:body] = options.attributes unless options.attributes.blank?
+      #  call_options[:params] = options.parameters unless options.parameters.blank?
+      #  call_options[:body] = options.attributes unless options.attributes.blank?
 
       # TODO: Farscape handles "parameters" as query string, and "attributes" as request body.
       # However, in many API documents, only "parameters" is used regardless of methods.
