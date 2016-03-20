@@ -24,6 +24,16 @@ module Farscape
       call_options[:method] = @transition.interface_method
       call_options[:headers] = @agent.get_accept_header(@agent.media_type).merge(options.headers || {})
       call_options[:body] = options.attributes unless options.attributes.blank?
+
+      # TODO: Farscape handles "parameters" as query string, and "attributes" as request body.
+      # However, in many API documents, only "parameters" is used regardless of methods.
+      # Here is an example of POST method using "parameters".
+      # https://github.com/mdsol/Archon/blob/436cd06de7f61d49390a82a4be6f2aca799ec277/apis/api_document_v1.yml#L308
+      #
+      # Since changing API documents must have a huge impact on existing systems,
+      # modified Farscape to use "parametes" as request body if method is not GET.
+      #
+      # This modification makes impossible to make a POST containing params.
       if @transition.interface_method.to_s.downcase == 'get'
         call_options[:params] = options.parameters unless options.parameters.blank?
       else
