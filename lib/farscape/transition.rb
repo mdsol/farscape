@@ -31,9 +31,9 @@ module Farscape
       # https://github.com/mdsol/Archon/blob/436cd06de7f61d49390a82a4be6f2aca799ec277/apis/api_document_v1.yml#L308
       #
       # Since changing API documents must have a huge impact on existing systems,
-      # modified Farscape to use "parametes" as request body if method is not GET.
+      # modified Farscape to use "parameters" as request body if method is not GET.
       #
-      # This modification makes impossible to make a POST containing params.
+      # This modification means it is impossible to make a POST containing params.
       if @transition.interface_method.to_s.downcase == 'get'
         call_options[:params] = options.parameters unless options.parameters.blank?
       else
