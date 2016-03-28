@@ -4,9 +4,9 @@ require 'ostruct'
 
 module Farscape
   class SafeRepresentorAgent
-    
+
     include BaseAgent
-    
+
     attr_reader :agent
     attr_reader :representor
     attr_reader :response
@@ -20,7 +20,7 @@ module Farscape
       @representor = deserialize(requested_media_type, response.body)
       handle_extensions
     end
-    
+
     %w(using omitting).each do |meth|
       define_method(meth) { |name_or_type| self.class.new(@requested_media_type, @response, @agent.send(meth, name_or_type)) }
     end
@@ -64,6 +64,7 @@ module Farscape
     end
 
     def _embedded(reprs, response)
+      reprs = [reprs] unless reprs.respond_to?(:map)
       reprs.map { |repr| @agent.representor.new(false, OpenStruct.new(status: response.status, headers: response.headers, body: repr), @agent) }
     end
 
