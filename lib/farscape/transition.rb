@@ -15,13 +15,11 @@ module Farscape
     end
 
     def invoke(args={})
-      #  opts=OpenStruct.new
-      #  yield opts if block_given?
-      #  options = match_params(args, opts)
-      options = OpenStruct.new
+      opts = OpenStruct.new
+      yield opts if block_given?
+      options = match_params(args, opts)
 
       call_options = {}
-      call_options[:url] = @transition.uri(args)
       call_options[:method] = @transition.interface_method
       call_options[:headers] = @agent.get_accept_header(@agent.media_type).merge(options.headers || {})
       #  call_options[:params] = options.parameters unless options.parameters.blank?
@@ -37,11 +35,12 @@ module Farscape
       #
       # This modification means it is impossible to make a POST containing params.
       if @transition.interface_method.to_s.downcase == 'get'
-        call_options[:params] = options.parameters unless options.parameters.blank?
+        call_options[:url] = @transition.uri(args)
       else
+        call_options[:url] = @transition.uri
+        call_options[:body] = options.attributes unless options.attributes.blank?
         call_options[:body] = (call_options[:body] || {}).merge(options.parameters) unless options.parameters.blank?
       end
-
       response = @agent.client.invoke(call_options)
 
       @agent.find_exception(response)
