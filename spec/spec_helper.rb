@@ -1,21 +1,15 @@
-RAILS_PORT = 1234
-SPEC_DIR = File.expand_path("..", __FILE__)
-lib_dir = File.expand_path("../lib", SPEC_DIR)
-
-
-$LOAD_PATH.unshift(lib_dir)
-$LOAD_PATH.uniq!
-
-require 'rspec'
-require 'pry'
-require 'bundler'
 require 'simplecov'
+SimpleCov.start
+
+require 'crichton'
+require 'representors'
 require 'moya'
 
-SimpleCov.start
-Bundler.setup
-
+RAILS_PORT = 1234
+SPEC_DIR = File.expand_path("..", __FILE__)
+$LOAD_PATH.unshift File.expand_path('../../lib', __FILE__)
 require 'farscape'
+
 Dir["#{SPEC_DIR}/support/*.rb"].each { |f| require f }
 
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
