@@ -14,30 +14,40 @@ module Farscape
       handle_extensions
     end
 
-    def invoke(args={})
-      opts=OpenStruct.new
+    def invoke(args = {})
+      opts = OpenStruct.new
       yield opts if block_given?
       options = match_params(args, opts)
+      params = args.merge(options.parameters || {})
 
       call_options = {}
-      call_options[:url] = @transition.uri
       call_options[:method] = @transition.interface_method
       call_options[:headers] = @agent.get_accept_header(@agent.media_type).merge(options.headers || {})
-      call_options[:body] = options.attributes unless options.attributes.blank?
+      call_options[:body] = options.attributes if options.attributes.present?
 
-      # TODO: Farscape handles "parameters" as query string, and "attributes" as request body.
-      # However, in many API documents, only "parameters" is used regardless of methods.
-      # Here is an example of POST method using "parameters".
-      # https://github.com/mdsol/Archon/blob/436cd06de7f61d49390a82a4be6f2aca799ec277/apis/api_document_v1.yml#L308
-      #
-      # Since changing API documents must have a huge impact on existing systems,
-      # modified Farscape to use "parameters" as request body if method is not GET.
-      #
-      # This modification means it is impossible to make a POST containing params.
-      if @transition.interface_method.to_s.downcase == 'get'
-        call_options[:params] = options.parameters unless options.parameters.blank?
+      if call_options[:method].downcase == 'get'
+        # delegate the URL building to representors so we can use templated URIs
+        call_options[:url] = @transition.uri(params)
+        # still need to use this for extra params... (e.g. "conditions=can_do_anything")
+        if params.present?
+          if @transition.templated?
+            # exclude the parameters that have been consumed by Addressable (e.g. path segments) so
+            # we don't repeat those in the final URL (ex: /api{/uuid} => /api/123456, not /api/123456?uuid=123456)
+            # TODO: make some "variables" method in representors/transition.rb so we don't deal with this here
+            Addressable::Template.new(@transition.templated_uri).variables.each do |param|
+              params.delete(param.to_sym)
+            end
+          end
+          call_options[:params] = params
+        end
       else
-        call_options[:body] = (call_options[:body] || {}).merge(options.parameters) unless options.parameters.blank?
+        # Farscape handles "parameters" as query string, and "attributes" as request body.
+        # However, in many API documents, only "parameters" is used regardless of methods.
+        # Since changing API documents must have a huge impact on existing systems,
+        # we use parameters as the request body if the method is not GET.
+        # This makes it impossible to use URIs with parameters.
+        call_options[:url] = @transition.uri
+        call_options[:body] = (call_options[:body] || {}).merge(params) if params.present?
       end
 
       response = @agent.client.invoke(call_options)

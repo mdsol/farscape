@@ -1,3 +1,6 @@
+# 1.2.0
+* Add support for templated URIs and POST requests
+
 # 1.1.2
 * Prevent crash when an embedded resource is not an enumerable
 
