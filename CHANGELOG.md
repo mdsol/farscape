@@ -1,3 +1,6 @@
+# 1.3.0
+* Add discover method and configuration to the Farscape agent.
+
 # 1.2.0
 * Add support for templated URIs and POST requests
 

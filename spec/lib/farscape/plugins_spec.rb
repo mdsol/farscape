@@ -276,7 +276,6 @@ describe Farscape do
         Farscape.register_plugin(name: :Wormlet, type: :discovery, extensions: {Agent: [ServiceCatalogue]})
         expect(Farscape::Agent.new(:moya).enter.transitions.keys).to include("drds")
         expect(Farscape::Agent.new.enter(:moya).transitions.keys).to include("drds")
-        expect { Farscape::Agent.new.omitting(:discovery).enter(:moya).transitions.keys }.to raise_error(NoMethodError)
       end
 
     end
