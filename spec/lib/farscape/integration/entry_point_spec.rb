@@ -3,6 +3,42 @@ require 'spec_helper'
 describe Farscape::Agent do
   let(:entry_point) { "http://localhost:#{RAILS_PORT}"}
 
+  describe '#discover' do
+    let(:resource_name) { 'user' }
+    let(:links) do
+      {
+        _links: {
+          resource_name => { href: entry_point }
+        }
+      }
+    end
+    before do
+      described_class.config = { discovery_uri: "https://www.example.com" }
+      stub_request(:any, "https://www.example.com").to_return(body: links.to_json)
+    end
+    after do
+        described_class.config = nil
+    end
+
+    it 'returns a Farscape::Representor from a name' do
+      expect(Farscape::Agent.new(resource_name).enter).to be_a Farscape::RepresentorAgent
+    end
+
+    it 'raises Discovery::NotFound if the name does not exist in the discovery service' do
+      expect{ Farscape::Agent.new('unknown').enter }.to raise_error Farscape::Discovery::NotFound
+    end
+
+    it 'raises Discovery::NotFound if the discovery url is not setup' do
+      described_class.config = nil
+      expect{ Farscape::Agent.new.discover_entry_point(resource_name) }.to raise_error Farscape::Discovery::NotFound
+    end
+
+    it 'raises Discovery::NotFound if the discovery url is not a proper url' do
+      described_class.config = { discovery_uri: "aaaaa" }
+      expect{ Farscape::Agent.new.discover_entry_point(resource_name) }.to raise_error Farscape::Discovery::NotFound
+    end
+  end
+
   describe '#enter' do
     it 'returns a Farscape::Representor' do
       expect(Farscape::Agent.new(entry_point).enter).to be_a Farscape::RepresentorAgent

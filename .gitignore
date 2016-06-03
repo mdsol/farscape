@@ -6,3 +6,4 @@ coverage
 tmp
 .yardoc
 yardoc
+.byebug_history

@@ -15,43 +15,59 @@ a response with a supported Hypermedia media-type and a root that lists availabl
 
 ### A Hypermedia API
 For a interacting with an API (or individual service that supports a list of resources at its root), you enter the
-API and follow your nose using the `enter` method on the agent. This method returns a [Farscape::Representor]() 
-instance with a simple state-machine interface of `attributes` (data) and `transitions` (link/form affordances) for 
+API and follow your nose using the `enter` method on the agent. This method returns a [Farscape::Representor](lib/farscape/representor.rb)
+instance with a simple state-machine interface of `attributes` (data) and `transitions` (link/form affordances) for
 interacting with the resource representations.
 
 ```ruby
-agent = Farscape::Agent.new('http://example.com/my_api')
+agent = Farscape::Agent.instance
 
-resources = agent.enter
+resources = agent.enter('http://example.com/my_api')
 resources.attributes # => { meta: 'data', or: 'other data' }
 resources.transitions.keys # => ['http://example.com/rel/drds', 'http://example.com/rel/leviathans']
 ```
 
 ### A Hypermedia Discovery Service
-For interacting with a discovery service, Farscape supports follow your nose entry to select a registered resource
-or immediately loading a discoverable resource if known to be registered in the service *a priori*.
+For interacting with a discovery service, you can use enter and follow your nose entry to select a registered resource or setup Farscape with a discovery server.
 
 ```ruby
-agent = Farscape::Agent.new('http://example.com/my_discovery_service')
-
-resources = agent.enter
-resources.attributes # => { meta: 'data', or: 'other data' }
-resources.transitions.keys # => ['http://example.com/rel/drds', 'http://example.com/rel/leviathans', 'next', 'last']
-
-drds = agent.enter('http://example.com/rel/drds')
-drds.attributes # => { total_count: 25, items: [...] }
-drds.transitions.keys # => ['self', 'search', 'create', 'next', 'last']
-
-agent.enter('http://example.com/rel/unknown_resource') # => raises Farscape::Agent::UnknownEntryPoint
+# Setting discovery service to https://my_discovery_api
+Farscape::Agent.config = { Farscape::Discovery::DISCOVERY_KEY => 'https://my_discovery_api' }
 ```
 
+The discovery service must return a document with a list of resource names and their root URLs like:
+
+```json
+{
+  "_links": {
+    "self":  { "href": "https://my_discovery_api" },
+    "boxes": { "href": "https://smallboxesandpoliceboxes.com" },
+    "items": { "href": "https://sonicscrewdriversandotherthings.com/v1/{item}" }
+  }
+}
+```
+
+Farscape then can be used directly with resource names. Farscape will already do the heavy-lifting of contacting the discovery service and retrieving the root document of the resource.
+
+```ruby
+agent = Farscape::Agent.instance
+boxes = agent.enter('boxes')
+boxes.attributes # => { total_count: 13, items: [...] }
+
+agent.enter('unknownresource') # raises Farscape::Discovery::NotFound
+
+agent.enter('items', [{ items: 'bow-tie' }]) # Allows template variables
+```
+
+
+
 ## API Interaction
-Entering an API takes you into its application state-machine and, as such, the interface for interacting with that 
-application state is brain dead simple with Farscape. You have data that you read and hypermedia affordances that tell 
+Entering an API takes you into its application state-machine and, as such, the interface for interacting with that
+application state is brain dead simple with Farscape. You have data that you read and hypermedia affordances that tell
 you what you can do next and you can invoke those affordances to do things. That's it.
 
-Farscape recognizes a number of media-types that support runtime knowledge of the underlying REST uniform-interface 
-methods. For these full-featured media-types, the interaction with with resources is as simple as a browser where 
+Farscape recognizes a number of media-types that support runtime knowledge of the underlying REST uniform-interface
+methods. For these full-featured media-types, the interaction with with resources is as simple as a browser where
 implementation of requests is completely abstracted from the user.
 
 The following simple examples highlight interacting with resource state-machines using Farscape.
@@ -128,7 +144,7 @@ new_drd.attributes # => { name: 'Pike' }
 new_drd.transitions.keys # => ['self', 'edit', 'delete', 'deactivate', 'leviathan']
 ```
 
-For more examples and information on using Faraday with media-types that require specifying uniform-interface methods 
+For more examples and information on using Faraday with media-types that require specifying uniform-interface methods
 and other protocol idioms when invoking transitions, see [Using Farscape]().
 
 ## Alternate Interface

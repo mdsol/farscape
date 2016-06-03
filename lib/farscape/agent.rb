@@ -1,16 +1,32 @@
 require 'farscape/representor'
 require 'farscape/clients'
+require 'farscape/discovery'
 
 module Farscape
   class Agent
-    
+
     include BaseAgent
-    
+
     PROTOCOL = :http
 
     attr_reader :media_type
     attr_reader :entry_point
-    
+
+    class << self
+      # Prevents multiple threads from accessing the same agent.
+      def instance
+        Thread.current[:farscape_agent] ||= Agent.new
+      end
+
+      def config
+        @farscape_config || {}
+      end
+
+      def config=(farscape_config)
+        @farscape_config = farscape_config
+      end
+    end
+
     def initialize(entry = nil, media = :hale, safe = false, plugin_hash = {})
       @entry_point = entry
       @media_type = media
@@ -23,10 +39,19 @@ module Farscape
       safe? ? SafeRepresentorAgent : RepresentorAgent
     end
 
-    def enter(entry = entry_point)
-      @entry_point ||= entry
+    # Discovers provided a key and template_variables.
+    # This method is here to be easily overwritten or monkey-patched if needed.
+    def discover_entry_point(key, template_variables = {})
+      Discovery.new.discover(self.class.config, key, template_variables)
+    end
+
+    def enter(entry = entry_point, template_variables = {})
       raise "No Entry Point Provided!" unless entry
-      response = client.invoke(url: entry, headers: get_accept_header(media_type))
+      @entry_point ||= entry
+      unless Addressable::URI.parse(@entry_point).absolute?
+        @entry_point = discover_entry_point(@entry_point, template_variables)
+      end
+      response = client.invoke(url: @entry_point, headers: get_accept_header(media_type))
       find_exception(response)
     end
 
@@ -100,7 +125,7 @@ module Farscape
     end
 
     private
-    
+
     def default_plugin_hash
       {
         plugins: Farscape.plugins.dup,  # A hash of plugins keyed by the plugin name
