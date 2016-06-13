@@ -48,6 +48,12 @@ describe Farscape::Agent do
       expect(Farscape::Agent.new.enter(entry_point)).to be_a Farscape::RepresentorAgent
     end
 
+    it 'can change entry points when new entry point is provided' do
+      agent = Farscape::Agent.instance
+      expect { agent.enter("http://localhost:#{RAILS_PORT}/drds/ninja_boot") }.to raise_error(Farscape::Exceptions::UnprocessableEntity)
+      expect(agent.enter(entry_point)).to be_a Farscape::RepresentorAgent
+    end
+
     #TODO decide on the appropriate error
     it 'raises an appropriate error if no entry point is specified' do
       expect{ Farscape::Agent.new.enter }.to raise_error(RuntimeError)

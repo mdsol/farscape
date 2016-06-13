@@ -45,9 +45,10 @@ module Farscape
       Discovery.new.discover(self.class.config, key, template_variables)
     end
 
-    def enter(entry = entry_point, template_variables = {})
-      raise "No Entry Point Provided!" unless entry
-      @entry_point ||= entry
+    def enter(entry = nil, template_variables = {})
+      @entry_point = entry || @entry_point  # If provided entry will update our current entry point
+      raise "No Entry Point Provided!" unless @entry_point
+
       unless Addressable::URI.parse(@entry_point).absolute?
         @entry_point = discover_entry_point(@entry_point, template_variables)
       end
