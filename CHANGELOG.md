@@ -1,3 +1,6 @@
+# 1.3.1
+* Fix bug to allow new resources to be entered when reusing the same agent.
+
 # 1.3.0
 * Add discover method and configuration to the Farscape agent.
 
