@@ -1,6 +1,7 @@
 require 'representors'
 require 'ostruct'
 require 'active_support/core_ext/object/blank'
+require 'faraday_middleware'
 
 module Farscape
 
@@ -10,6 +11,8 @@ module Farscape
 
     def initialize(transition, agent)
       @agent = agent
+      @agent.client.connection.use FaradayMiddleware::EncodeJson
+      @agent.client.connection.use FaradayMiddleware::ParseJson, :content_type => 'application/json'
       @transition = transition
       handle_extensions
     end
