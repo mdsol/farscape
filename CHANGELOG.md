@@ -1,3 +1,6 @@
+# 1.3.2
+* Add support for use of JSON in request body.
+
 # 1.3.1
 * Fix bug to allow new resources to be entered when reusing the same agent.
 

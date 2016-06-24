@@ -7,10 +7,10 @@ describe Farscape::TransitionAgent do
   let(:arg) { { additional_fields: { key1: 'value1', key2: 'value2' } } }
   let(:transition_agent) { described_class.new(transition, agent) }
   let(:field_list) { double(name: 'additional_fields') }
-  let(:call_options) { { url: 'com:mdsol', headers: { Accept: 'application/vnd.hale+json' } } }
+  let(:call_options) { { url: 'com:mdsol', headers: { 'Accept' => 'application/vnd.hale+json' } } }
 
   before do
-    allow(agent).to receive(:get_accept_header).and_return(Accept: 'application/vnd.hale+json')
+    allow(agent).to receive(:get_accept_header).and_return('Accept' => 'application/vnd.hale+json')
     allow(agent).to receive(:find_exception).and_return(nil)
     allow(transition).to receive(:interface_method).and_return(http_method)
     allow(transition).to receive(:parameters).and_return([ field_list ])

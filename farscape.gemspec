@@ -21,6 +21,7 @@ Gem::Specification.new do |s|
   s.add_dependency 'activesupport'
   s.add_dependency 'addressable', '~> 2.3'
   s.add_dependency 'faraday', '~> 0.9'
+  s.add_dependency 'faraday_middleware', '~> 0.10'
   s.add_dependency 'rake'
   s.add_dependency 'representors', '~> 0.0.5'
 

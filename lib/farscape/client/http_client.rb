@@ -2,6 +2,7 @@ require 'faraday'
 require 'farscape/client/base_client'
 require 'farscape/plugins'
 require 'farscape/errors'
+require 'faraday_middleware'
 
 module Farscape
   class Agent
@@ -13,7 +14,7 @@ module Farscape
 
       def initialize(agent)
         @connection = Faraday.new do |builder|
-          builder.request :url_encoded
+          builder.request :json
           agent.middleware_stack.each do |middleware|
             if middleware.key?(:config)
               config = middleware[:config]
