@@ -1,3 +1,6 @@
+# 1.3.3
+* Update to make GET request query in lowercase.
+
 # 1.3.2
 * Add support for use of JSON in request body.
 
