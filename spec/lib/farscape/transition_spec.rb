@@ -50,14 +50,14 @@ describe Farscape::TransitionAgent do
     context "GET" do
       let(:http_method) { "get" }
 
-      it "interpolates a templated URI" do
+      it "interpolates a templated URI in lowercase" do
         options = call_options.merge(
           method: http_method,
           url: "https://example.com/api/v1/issues/#{issue_uuid}",
           params: arg
         )
         expect(client).to receive(:invoke).with(options)
-        transition_agent.invoke(arg.merge(issue_uuid: issue_uuid))
+        transition_agent.invoke(arg.merge(issue_uuid: issue_uuid.upcase))
       end
     end
 

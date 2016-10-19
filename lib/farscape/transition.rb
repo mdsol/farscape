@@ -27,7 +27,13 @@ module Farscape
 
       if call_options[:method].downcase == 'get'
         # delegate the URL building to representors so we can use templated URIs
-        call_options[:url] = @transition.uri(params)
+
+        # We are in another unfortunate situation in which Mauth-client might not be able to validate
+        # if a request query string contains uppercase characters.
+        # Somebody, probably Nginx, converts the query string to lowercase, and Mauth-client uses it
+        # to compare with the signature which is generated using the original query string.
+        # https://github.com/mdsol/mauth-client-ruby/blob/v4.0.1/lib/mauth/client.rb#L333
+        call_options[:url] = @transition.uri(params).downcase
         # still need to use this for extra params... (e.g. "conditions=can_do_anything")
         if params.present?
           if @transition.templated?
