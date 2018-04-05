@@ -14,7 +14,7 @@ describe Farscape::Agent do
     end
     before do
       described_class.config = { discovery_uri: "https://www.example.com" }
-      stub_request(:any, "https://www.example.com").to_return(body: links.to_json)
+      stub_request(:any, "https://www.example.com/?per_page=1").to_return(body: links.to_json)
     end
     after do
         described_class.config = nil

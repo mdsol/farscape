@@ -52,7 +52,7 @@ module Farscape
       unless Addressable::URI.parse(@entry_point).absolute?
         @entry_point = discover_entry_point(@entry_point, template_variables)
       end
-      response = client.invoke(url: @entry_point, headers: get_accept_header(media_type))
+      response = client.invoke(url: single_page(@entry_point), headers: get_accept_header(media_type))
       find_exception(response)
     end
 
@@ -135,5 +135,10 @@ module Farscape
       }
     end
 
+    def single_page(entry_point)
+      uri = Addressable::URI.parse(entry_point)
+      uri.query_values = (uri.query_values || {}).merge(per_page: 1)
+      uri.to_s
+    end
   end
 end
